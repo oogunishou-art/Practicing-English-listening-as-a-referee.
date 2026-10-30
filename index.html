@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<!--
+  審判英語リスニング（Referee English）
+  © 2026 大國将 (GitHub: oogunishou-art). All rights reserved.
+  本ファイルの無断転載・複製・改変・再配布を禁じます。
+  フレーズを追加するときは、各カテゴリの配列の「末尾」に追加してください（学習記録のIDがずれないように）。
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#000000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="審判英語">
+<title>審判英語リスニング</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Barlow+Condensed:wght@700&family=Barlow:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDEFF2; --surface:#FFFFFF; --ink:#1D2026; --sub:#5E6672; --line:#D5D9DF; --chip:#E3E6EA;
+  --stripe:#B9BEC5; --led:#FFB000; --ok:#17804A; --ng:#C62828;
+  --btn:#000000; --btn-ink:#FFFFFF;
+  --r-m:12px;
+  --font-ja:"BIZ UDPGothic","Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic UI","Meiryo",sans-serif;
+  --font-en:"Barlow","Helvetica Neue",Arial,sans-serif;
+  --font-cond:"Barlow Condensed","Arial Narrow","Helvetica Neue",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#121417; --surface:#1C1F23; --ink:#E8EAED; --sub:#9BA3AE; --line:#30353C; --chip:#272B31;
+    --stripe:#4A5059; --ok:#45C47F; --ng:#FF6B6B; --btn:#FFB000; --btn-ink:#000000;
+    color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.6 var(--font-ja);min-height:100vh}
+button{font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+:focus-visible{outline:3px solid var(--led);outline-offset:2px}
+p{margin:0}
+
+/* ヘッダー：審判シャツの襟とストライプ */
+.top{position:sticky;top:0;z-index:20;background:#000;color:#fff;
+  padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 10px;display:flex;align-items:center;justify-content:space-between}
+.top::after{content:"";position:absolute;left:0;right:0;bottom:-10px;height:10px;
+  background:repeating-linear-gradient(90deg,#000 0 10px,var(--stripe) 10px 24px)}
+.top h1{margin:0;font:700 27px/1 var(--font-cond);letter-spacing:.01em}
+.top h1 small{display:block;font:400 11px/1.4 var(--font-ja);color:#B9BEC5;margin-top:4px;letter-spacing:0}
+.gear{width:44px;height:44px;border-radius:50%;border:1px solid #3a3a3a;background:transparent;color:#fff;display:grid;place-items:center}
+
+.wrap{max-width:640px;margin:0 auto;padding:28px 16px calc(96px + env(safe-area-inset-bottom,0px))}
+.h{font:700 23px/1.3 var(--font-ja);margin:2px 0 6px}
+.h3{font:700 16px/1.4 var(--font-ja);margin:22px 0 8px}
+.lead{color:var(--sub);font-size:14px;margin-bottom:6px}
+.label{font:700 12px/1.4 var(--font-ja);color:var(--sub);margin:18px 0 6px}
+.hint{font-size:12.5px;color:var(--sub);margin-top:14px;line-height:1.7}
+.banner{background:var(--surface);border:1.5px solid var(--ng);color:var(--ink);border-radius:var(--r-m);padding:12px 14px;margin-bottom:14px;font-size:14px}
+
+/* ナビ */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--surface);border-top:1px solid var(--line);
+  display:grid;grid-template-columns:repeat(5,1fr);padding-bottom:env(safe-area-inset-bottom,0px)}
+.nav button{appearance:none;border:0;background:none;color:var(--sub);padding:7px 0 9px;font:700 11px/1.2 var(--font-ja);
+  display:flex;flex-direction:column;align-items:center;gap:3px}
+.nav button svg{width:44px;height:28px;padding:3px 10px;border-radius:999px}
+.nav button[aria-current="page"]{color:var(--ink)}
+.nav button[aria-current="page"] svg{background:var(--led);color:#000}
+
+/* チップ・セグメント */
+.chips{display:flex;gap:8px;overflow-x:auto;margin:0 -16px;padding:2px 16px 8px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;
+  padding:8px 13px;font:700 13px/1 var(--font-ja);display:inline-flex;align-items:center;gap:6px}
+.chip .n{font:700 12px/1 var(--font-cond);color:var(--sub)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip[aria-pressed="true"] .n{color:inherit;opacity:.75}
+.seg{display:flex;background:var(--chip);border-radius:10px;padding:3px;gap:2px}
+.seg button{flex:1;border:0;background:transparent;padding:9px 6px;border-radius:8px;font:700 13px/1.2 var(--font-ja);color:var(--sub)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.18)}
+.setrow{display:grid;grid-template-columns:7.5em 1fr;align-items:center;gap:10px;margin-top:10px}
+.setrow > span{font:700 13px/1.4 var(--font-ja);color:var(--sub)}
+
+/* ボタン */
+.primary{display:block;width:100%;margin-top:18px;background:var(--btn);color:var(--btn-ink);border:0;border-radius:var(--r-m);padding:15px;font:700 16px/1.2 var(--font-ja)}
+.primary.inline{display:inline-block;width:auto;margin:0;padding:12px 20px;font-size:15px}
+.ghost{display:block;width:100%;margin-top:10px;background:transparent;color:var(--ink);border:1.5px solid var(--line);border-radius:var(--r-m);padding:12px;font:700 14px/1.2 var(--font-ja)}
+.danger{display:block;width:100%;background:transparent;color:var(--ng);border:1.5px solid currentColor;border-radius:var(--r-m);padding:12px;font:700 14px/1.2 var(--font-ja)}
+.link{border:0;background:none;color:var(--sub);font:700 13px var(--font-ja);padding:6px 4px;text-decoration:underline;text-underline-offset:3px}
+.back{border:0;background:none;color:var(--sub);font:700 14px var(--font-ja);padding:4px 0;display:inline-flex;align-items:center;gap:4px;margin-bottom:8px}
+
+/* フレーズ一覧 */
+.intro{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.tally{display:flex;align-items:baseline;gap:4px;color:var(--sub);font-size:13px}
+.tally b{font:700 32px/1 var(--font-cond);color:var(--ink)}
+.switch{display:inline-flex;align-items:center;gap:8px;font:700 13px var(--font-ja);color:var(--ink)}
+.switch input{width:20px;height:20px;accent-color:var(--ink);margin:0}
+.search{width:100%;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:11px 12px;font:400 16px var(--font-ja);margin:4px 0 12px}
+.plist{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);overflow:hidden}
+.row{display:grid;grid-template-columns:44px 1fr auto;gap:12px;padding:14px 12px;border-top:1px solid var(--line);align-items:start}
+.row:first-child{border-top:0}
+.play{width:44px;height:44px;border-radius:50%;border:0;background:var(--led);color:#000;display:grid;place-items:center;padding:0 0 0 2px}
+.txt{min-width:0;cursor:pointer}
+.en{display:block;font:600 18px/1.35 var(--font-en);margin:0;overflow-wrap:anywhere}
+.ja{display:block;font:400 14px/1.6 var(--font-ja);color:var(--sub);margin-top:3px}
+.note{font:400 12.5px/1.65 var(--font-ja);color:var(--sub);margin-top:7px;padding-left:10px;border-left:3px solid var(--line)}
+.who{font:700 12px/1.4 var(--font-ja);color:var(--sub);margin-top:8px}
+.who:first-child{margin-top:0}
+.hide-ja .row:not(.show) .ja,.hide-ja .row:not(.show) .note{filter:blur(6px);user-select:none}
+.acts{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.mini{font:700 11px/1 var(--font-ja);border:1px solid var(--line);background:var(--surface);color:var(--sub);border-radius:999px;padding:7px 9px;white-space:nowrap}
+.starb{border:0;background:none;color:var(--line);width:36px;height:32px;display:grid;place-items:center;padding:0}
+.starb[aria-pressed="true"]{color:var(--led)}
+.badge{font:700 11px/1 var(--font-ja);white-space:nowrap}
+.badge.done{color:var(--ok)}.badge.weak{color:var(--ng)}
+.empty{padding:22px 16px;color:var(--sub);font-size:14px;text-align:center;list-style:none}
+
+/* スコアボード（クイズ・聞き流し） */
+.qhead{display:flex;align-items:baseline;gap:6px;margin-bottom:12px}
+.qhead .qscore{margin-left:auto;font:700 13px var(--font-ja);color:var(--sub)}
+.led{font:700 46px/1 var(--font-cond);color:var(--led);font-variant-numeric:tabular-nums}
+.qhead .led{font-size:34px;color:var(--ink)}
+.of{font:700 18px/1 var(--font-cond);color:var(--sub)}
+.pad,.board{background:#000;color:#fff;border-radius:var(--r-m)}
+@media (prefers-color-scheme: dark){.pad,.board{border:1px solid var(--line)}}
+.pad{padding:20px 16px 16px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.speaker{font:700 13px/1.4 var(--font-ja);color:var(--led)}
+.bigplay{width:96px;height:96px;border-radius:50%;background:var(--led);border:0;color:#000;display:grid;place-items:center;padding:0 0 0 4px}
+.padbtns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.padbtns button{background:transparent;border:1px solid #4d4d4d;color:#fff;border-radius:999px;padding:9px 15px;font:700 13px/1 var(--font-ja)}
+.hintja{margin-top:12px;padding:10px 12px;background:var(--surface);border:1px dashed var(--line);border-radius:10px;color:var(--sub);font-size:14px}
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(255,176,0,.55)}100%{box-shadow:0 0 0 18px rgba(255,176,0,0)}}
+.speaking{animation:ring 1.1s ease-out infinite}
+@media (prefers-reduced-motion: reduce){.speaking{animation:none;box-shadow:0 0 0 4px rgba(255,176,0,.6)}}
+
+.opts{display:grid;gap:10px;margin-top:14px}
+.opt{text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:var(--r-m);padding:14px;font:400 15px/1.55 var(--font-ja);color:var(--ink)}
+.opt.en-opt{font:600 16.5px/1.4 var(--font-en)}
+.opt.correct{border-color:var(--ok);box-shadow:inset 5px 0 0 var(--ok)}
+.opt.wrong{border-color:var(--ng);box-shadow:inset 5px 0 0 var(--ng)}
+.opt.dim{opacity:.5}
+.opt:disabled{cursor:default}
+.fb{margin-top:14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-m);padding:16px}
+.verdict{font:700 18px/1.3 var(--font-ja);margin-bottom:8px}
+.verdict.ok{color:var(--ok)}.verdict.ng{color:var(--ng)}
+.diff{font:600 17px/1.8 var(--font-en);margin:4px 0 10px}
+.diff .hit{color:var(--ok)}
+.diff .miss{color:var(--ng);text-decoration:underline wavy;text-underline-offset:4px}
+.yours{font-size:13px;color:var(--sub);margin-top:10px;overflow-wrap:anywhere}
+textarea.ans{width:100%;margin-top:14px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:var(--r-m);padding:12px;font:500 17px/1.5 var(--font-en);resize:vertical}
+.result{text-align:center;padding:10px 0 4px}
+.result .led{font-size:84px;color:var(--ink)}
+.result .led span{font-size:32px;color:var(--sub)}
+.result p{color:var(--sub);margin-top:6px}
+
+/* 聞き流し */
+.board{padding:16px 18px 18px}
+.board-top{display:flex;align-items:baseline;gap:6px}
+.phase{margin-left:auto;font:700 12px/1 var(--font-ja);color:var(--led)}
+.board-cat{font:700 12px/1.4 var(--font-ja);color:#9aa0a8;margin-top:12px}
+.board-en{font:600 25px/1.3 var(--font-en);margin:6px 0 8px;min-height:2.6em;cursor:pointer;overflow-wrap:anywhere}
+.board-ja{font:400 15px/1.6 var(--font-ja);color:#c3c7cc;min-height:1.6em}
+.ctrl{display:flex;justify-content:center;align-items:center;gap:26px;margin-top:18px}
+.ctrl .mid{width:78px;height:78px;border-radius:50%;background:var(--led);border:0;color:#000;display:grid;place-items:center}
+.ctrl .side{width:50px;height:50px;border-radius:50%;background:#262626;color:#fff;border:0;display:grid;place-items:center}
+
+/* 会話 */
+.dlist{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:10px}
+.dcard{width:100%;text-align:left;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:var(--r-m);padding:14px;display:grid;grid-template-columns:1fr auto;gap:2px 10px}
+.dcard .dt{font:700 16px/1.4 var(--font-ja)}
+.dcard .dd{grid-column:1;font-size:13px;color:var(--sub)}
+.dcard .dn{grid-column:2;grid-row:1 / span 2;align-self:center;font:700 13px var(--font-cond);color:var(--sub)}
+.talkbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+.lines{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:10px}
+.line{width:100%;text-align:left;display:grid;grid-template-columns:4.6em 1fr;gap:10px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:var(--r-m);padding:12px}
+.line .who{margin:3px 0 0}
+.line.me{box-shadow:inset 4px 0 0 var(--led)}
+.line.me .who{color:var(--ink)}
+.line.now{border-color:var(--led);outline:2px solid var(--led);outline-offset:-1px}
+.hide-en .line .en{filter:blur(7px);user-select:none}
+.no-ja .line .ja{display:none}
+
+/* 設定 */
+dialog#settings{border:0;padding:0;width:min(560px,100%);max-width:100%;margin:auto auto 0;border-radius:16px 16px 0 0;background:var(--surface);color:var(--ink);max-height:92vh;overflow-y:auto;overscroll-behavior:contain}
+@media (min-width:640px){dialog#settings{margin:auto;border-radius:16px}}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+.sheet{padding:18px 18px calc(20px + env(safe-area-inset-bottom,0px));display:grid;gap:14px}
+.sheet-head{display:flex;justify-content:space-between;align-items:center}
+.sheet-head h2{margin:0;font:700 20px var(--font-ja)}
+.field{display:grid;gap:6px;font:700 13px/1.4 var(--font-ja);color:var(--sub)}
+.field select,.field input[type=range]{width:100%;font:400 15px var(--font-ja);color:var(--ink)}
+.field select{padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.field input[type=range]{accent-color:var(--led)}
+.field b{color:var(--ink);font-family:var(--font-cond);font-size:16px}
+.btnrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btnrow .ghost{margin:0}
+.fine{font-size:11.5px;color:var(--sub);line-height:1.7;overflow-wrap:anywhere}
+.fine b{color:var(--ink)}
+
+#toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translate(-50%,10px);background:#000;color:#fff;
+  padding:10px 16px;border-radius:999px;font:700 13px var(--font-ja);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:40;max-width:90vw;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+@media (prefers-reduced-motion: reduce){#toast{transition:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Referee English<small>審判英語リスニング</small></h1>
+  <button class="gear" id="openSettings" aria-label="設定を開く">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+  </button>
+</header>
+
+<main id="view" class="wrap"><noscript>JavaScriptを有効にしてください。</noscript></main>
+<nav class="nav" id="nav" aria-label="メニュー"></nav>
+
+<dialog id="settings" aria-labelledby="setTitle">
+  <form method="dialog" class="sheet">
+    <div class="sheet-head"><h2 id="setTitle">設定</h2><button class="link" value="close">閉じる</button></div>
+    <label class="field"><span>審判役の声（フレーズ・あなたのセリフ）</span><select id="selVoice"></select></label>
+    <label class="field"><span>相手役の声（コーチ・選手・TO・相方）</span><select id="selAlt"></select></label>
+    <label class="field"><span>英語の速さ <b id="rateVal"></b></span><input type="range" id="rate" min="0.5" max="1.2" step="0.05"></label>
+    <label class="field"><span>日本語の速さ（聞き流し） <b id="jaRateVal"></b></span><input type="range" id="jaRate" min="0.8" max="1.8" step="0.1"></label>
+    <div class="btnrow"><button type="button" class="ghost" id="testMain">審判役を試聴</button><button type="button" class="ghost" id="testAlt">相手役を試聴</button><button type="button" class="ghost" id="testJa" style="grid-column:1 / -1">日本語を試聴</button></div>
+    <p class="hint" id="voiceWarn" hidden>英語の音声が見つかりません。端末の読み上げ設定で英語の音声を追加してください。</p>
+    <p class="hint">iPhoneは「設定」→「アクセシビリティ」→「読み上げコンテンツ」→「声」→「英語」で、高音質の声（拡張・プレミアム）をダウンロードできます。追加後にこのページを開き直すと選べます。</p>
+    <button type="button" class="danger" id="resetAll">学習記録をリセット</button>
+    <div class="fine">
+      <p><b>補足の根拠について</b><br>補足欄の（18-2-5）などは、JBA 2026バスケットボール競技規則（FIBA Official Basketball Rules 2024にもとづく）の条項番号です。2027競技規則（国内は2027年4月1日から）では一部の条番号と用語が変わります。審判メカニクスの用語はFIBA 2PO・3POマニュアルの用語です。英語の言い回しは一般的な表現で、公式の定型文ではありません。</p>
+      <p style="margin-top:8px"><b>出典</b><br>
+      FIBA Official Basketball Rules 2024 v1.0（FIBA、2024年10月1日発効）<br>https://assets.fiba.basketball/image/upload/documents-corporate-fiba-official-rules-2024-v10.pdf<br>
+      The FIBA Official Basketball Rules Changes 2024 v2.0（FIBA、フェイクの警告を含む）<br>https://assets.fiba.basketball/image/upload/documents-corporate-fiba-official-rules-2024-changes---v20a-eng.pdf<br>
+      2027バスケットボール競技規則 主な変更点要約サマリー（JBA審判グループ、2026年8月23日）<br>https://www.japanbasketball.jp/files/referee/rule/2027rule_changepoint_20260823.pdf</p>
+      <p style="margin-top:8px">© 2026 大國将</p>
+    </div>
+  </form>
+</dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+console.log('%c審判英語リスニング © 2026 大國将 (oogunishou-art)\n無断転載・複製・改変・再配布を禁じます。','color:#C62828;font-weight:bold;font-size:14px');
+
+/* ===================== データ ===================== */
+const CATS=[
+  {id:'crew',  name:'クルー',   full:'審判同士'},
+  {id:'coach', name:'コーチ',   full:'コーチとのやりとり'},
+  {id:'call',  name:'判定説明', full:'判定の説明'},
+  {id:'player',name:'選手',     full:'選手への声かけ'},
+  {id:'table', name:'TO',       full:'テーブルオフィシャル'},
+  {id:'term',  name:'用語',     full:'ルール用語'}
+];
+// [英語, 日本語, 補足]  ※追加は各配列の末尾へ
+const RAW={
+crew:[
+ ["Let’s have our pregame conference.","プリゲームカンファレンス（試合前の打ち合わせ）をしましょう。",""],
+ ["As crew chief, I’ll toss the jump ball.","クルーチーフとして、私がジャンプボールをトスします。","第1クォーターはクルーチーフのトスで始まる（9-1）。"],
+ ["The lead has primary coverage in the paint.","ペイント内はリードがプライマリです。","primary coverage＝最初に責任をもって見る担当エリア。担当分けの詳細はFIBA 2POマニュアルで確認。"],
+ ["I’ll watch the shooter until they land.","シューターが着地するまで私が見ます。",""],
+ ["If we both whistle, let’s make eye contact first.","2人同時に笛が鳴ったら、まずアイコンタクトしましょう。","ダブルホイッスルのときの約束事。"],
+ ["Let’s get together.","集まりましょう。（合議しましょう）","判定を確認したいときの声かけ。"],
+ ["What did you see?","何が見えましたか？",""],
+ ["I had a block. What did you have?","私はブロッキングでした。あなたは？","「I had ～」は「私の判定は～」という審判の定番表現。"],
+ ["I didn’t have a good angle on that play.","あのプレーは良い角度で見えていませんでした。",""],
+ ["That’s your call.","それはあなたの判定です。（あなたに任せます）",""],
+ ["Good call.","いいコールでした。",""],
+ ["Let’s watch the shot clock in the last two minutes.","残り2分はショットクロックに注意しましょう。",""],
+ ["Let’s be consistent on hand-checking.","ハンドチェッキングの基準をそろえましょう。",""],
+ ["Talk to me during dead balls.","デッドボールの間に声をかけてください。",""],
+ ["Rotate.","ローテーションして。","3POで、リードがボールサイドへ移るときの声かけ（FIBA 3POマニュアルの用語）。"],
+ ["Nice work today.","今日はお疲れさまでした。","試合後のクルー同士のあいさつ。"]
+],
+coach:[
+ ["Coach, I’ll explain at the next dead ball.","コーチ、次のデッドボールで説明します。","ヘッドコーチが審判と話せるのは、ボールがデッドでゲームクロックが止まっているとき（7-5）。"],
+ ["Coach, I hear you.","コーチ、言い分はわかりました。","受け止めつつ、会話を区切る言い方。"],
+ ["I saw it differently.","私には違って見えました。",""],
+ ["Coach, please stay in your team bench area.","コーチ、チームベンチエリアの中にいてください。","コーチはチームベンチエリア内にいれば選手に声をかけられる（7-6）。"],
+ ["Please have your bench sit down.","ベンチの皆さんを座らせてください。","交代要員などは競技時間中は座っていなければならない（7-3）。立っていられるのはヘッドコーチかファーストアシスタントコーチのどちらか1人（7-6）。"],
+ ["Coach, that’s enough.","コーチ、そこまでにしてください。",""],
+ ["Coach, this is a warning.","コーチ、これは警告です。","審判は警告によってテクニカルファウルを未然に防ぐことができる（36-1-4）。"],
+ ["If it happens again, it’ll be a technical foul.","次にあったらテクニカルファウルです。",""],
+ ["Please calm down, coach. Let’s keep the game going.","コーチ、落ち着いてください。試合を続けましょう。",""],
+ ["You have one timeout left in this half.","このハーフのタイムアウトは残り1回です。",""],
+ ["Only two timeouts can be used in the last two minutes.","第4クォーター残り2分で使えるタイムアウトは2回までです。","後半のタイムアウトは3回。そのうち第4クォーター残り2分以降に使えるのは2回まで（18-2-5）。"],
+ ["Timeout, white.","白、タイムアウト。",""],
+ ["Coach, is that a timeout or a substitution?","コーチ、タイムアウトですか？交代ですか？",""],
+ ["Coach, number 7 has four fouls.","コーチ、7番はファウル4つです。",""],
+ ["That’s the fifth foul for number 9. Please make a substitution.","9番の5つ目のファウルです。交代させてください。","5つのファウルをしたプレーヤーは、ただちにゲームから離れなければならない（40-1）。"],
+ ["Coach, you’re disqualified. Please go to your team’s dressing room.","コーチ、失格です。チームの控室へ行ってください。","失格・退場者はただちに（30秒以内）ゲームを離れ、試合中はチームの控室にとどまるか会場を出る（40-6）。"]
+],
+call:[
+ ["The defender was still moving.","ディフェンスはまだ動いていました。","ブロッキングの説明でよく使う。"],
+ ["The defender had a legal guarding position.","ディフェンスはリーガルガーディングポジションを取っていました。","チャージングの説明（33-3）。"],
+ ["The contact was outside the defender’s cylinder.","接触はディフェンスのシリンダーの外で起きました。","シリンダーの原則（33-1）。"],
+ ["The defender jumped straight up.","ディフェンスは真上に跳んでいました。","バーティカリティ（垂直の原則）の説明（33-2）。"],
+ ["The defender was inside the no-charge semi-circle.","ディフェンスはノーチャージセミサークルの中にいました。","空中でボールを持つオフェンスがショットまたはパスをする場面で適用（33-10）。"],
+ ["The contact happened before the shot.","接触はショットの前に起きました。",""],
+ ["The ball was already released.","ボールはもう手から離れていました。",""],
+ ["It was incidental contact.","偶発的な接触（インシデンタルコンタクト）でした。","ノーコールの説明。"],
+ ["No advantage was gained.","有利・不利は生じていませんでした。",""],
+ ["The pivot foot came up before the dribble started.","ドリブルを始める前にピボットフットが上がりました。","トラベリングの説明（25-2-1）。"],
+ ["That was three steps after the gather.","ギャザーの後に3歩でした。","トラベリングの説明。歩数はボールのコントロールを得てから数える（25-2-1）。"],
+ ["Fouled in the act of shooting. Two free throws.","シュート動作中のファウル。フリースロー2本です。","2点ショットが不成功だった場合（34-2-2）。"],
+ ["The basket counts, plus one free throw.","ゴールは認められ、フリースロー1本です。","いわゆるバスケットカウント（34-2-2）。"],
+ ["That’s an unsportsmanlike foul. Two free throws and possession.","アンスポーツマンライクファウル。フリースロー2本と、その後のボールです。","シュート動作中でない場合。フリースローの後、フロントコートのスローインラインからスローイン（37-2-2）。国内では2026競技規則（2027年3月31日まで）の用語。2027競技規則ではディスラプティブファウル／フレグラントファウルに置き換わる。"],
+ ["There was no legitimate play on the ball.","ボールへの正当なプレーがありませんでした。","アンスポーツマンライクファウルの判断基準の1つ（37-1-1）。"],
+ ["Double foul. The team in control keeps the ball.","ダブルファウル。ボールをコントロールしていたチームのボールで再開します。","フリースローは与えられない（35-2）。"],
+ ["The ball hit the ring and the offense got it back, so it’s fourteen.","ボールがリングに当たってオフェンスが取ったので、14秒です。","リングに当たった後、同じチームがボールを取ったら14秒、相手チームなら24秒（29-2-7）。"],
+ ["We’ll check it on the monitor.","モニターで確認します。","インスタントリプレイシステム（IRS）を使うとき（別添資料F）。"],
+ ["After review, the call stands.","映像確認の結果、判定はそのままです。",""],
+ ["After review, the call is changed.","映像確認の結果、判定を変更します。",""],
+ ["Held ball. The arrow is pointing to blue.","ヘルドボール。アローは青です。","オルタネイティングポゼッションで、アローの向きのチームのスローイン（12-6）。"],
+ ["That’s a disruptive foul. Two free throws and possession.","ディスラプティブファウル。フリースロー2本と、その後のボールです。","2027競技規則（国内は2027年4月1日から）。罰則は従来のアンスポーツマンライクファウルと同じで、フリースローの後フロントコートのスローインラインからスローイン（新37-2-2）。"],
+ ["That’s a flagrant foul.","フレグラントファウルです。","2027競技規則で新設（新第38条）。2個で失格・退場（ゲームディスクォリフィケーション）。"]
+],
+player:[
+ ["Watch your hands.","手に気をつけて。","ファウルになる前の予防的な声かけ。"],
+ ["Hands off.","手を離して。",""],
+ ["Let him go.","（つかまずに）離して。",""],
+ ["Don’t push.","押さないで。",""],
+ ["Watch your elbows.","ひじに気をつけて。",""],
+ ["Stay vertical.","真上に跳んで。",""],
+ ["Number 12, come here, please.","12番、こちらに来てください。",""],
+ ["Captain, please talk to your teammate.","キャプテン、チームメイトに話をしてください。",""],
+ ["Wait for my whistle.","笛を待ってください。",""],
+ ["Your ball. Throw-in from here.","あなたたちのボールです。ここからスローイン。",""],
+ ["You have five seconds to throw it in.","スローインは5秒以内です。","スローインは5秒以内にボールを離す（17-3-1）。"],
+ ["Two shots.","フリースロー2本です。",""],
+ ["Last shot.","最後の1本です。",""],
+ ["Stay in your spot until the ball leaves the shooter’s hands.","シューターの手からボールが離れるまで、その位置にいてください。","リバウンドの位置にいるプレーヤーは、ボールがシューターの手から離れるまで位置を離れられない（43-2-4）。"],
+ ["Number 4, that’s a warning for faking a foul.","4番、ファウルを装った行為（フェイク）への警告です。","フェイクの警告はチーム全体に適用され、そのチームの2回目はテクニカルファウル（FIBA公式解説 第36条）。"],
+ ["Are you okay? I’m stopping the game.","大丈夫？ゲームを止めます。","負傷時（5-1、5-2）。"],
+ ["Please tuck in your shirt.","シャツを入れてください。","シャツはパンツの中に入れる（4-3-1）。国内大会では、女子はシャツを外に出すデザインも可（JBA補足）。"],
+ ["Please take off your jewelry.","アクセサリーを外してください。","ヘアアクセサリーやアクセサリー類は着用できない（4-4-2）。"],
+ ["Play basketball.","プレーに集中しよう。",""]
+],
+table:[
+ ["Scorer, how many fouls does white number 10 have?","スコアラー、白10番のファウルはいくつですか？",""],
+ ["Team fouls, please.","チームファウルを教えてください。",""],
+ ["That’s the fifth team foul, so it’s two free throws.","5つ目のチームファウルなので、フリースロー2本です。","各クォーターでチームファウルが4つに達した後、シュート動作中でないプレーヤーへのパーソナルファウルはフリースロー2本。ボールをコントロールしているチームのファウルは除く（41-1-1、41-2）。"],
+ ["How much time is left on the game clock?","ゲームクロックは残り何秒ですか？",""],
+ ["Please stop the clock.","時計を止めてください。",""],
+ ["Timer, please put one second back on the clock.","タイマー、ゲームクロックを1秒戻してください。",""],
+ ["Please reset the shot clock to twenty-four.","ショットクロックを24秒にしてください。",""],
+ ["Shot clock, fourteen.","ショットクロック、14秒。","14秒・24秒のリセット（29-2）。"],
+ ["No reset on the shot clock.","ショットクロックはリセットしません。",""],
+ ["Did the horn sound?","ブザーは鳴りましたか？",""],
+ ["Please sound the horn for the substitution.","交代のブザーを鳴らしてください。",""],
+ ["Which way is the arrow pointing?","アローはどちらを向いていますか？","アローは次のスローインのチームが攻める方向を指す（12-6-4）。"],
+ ["Please switch the arrow to white.","アローを白に変えてください。",""],
+ ["Let’s check the score sheet.","スコアシートを確認しましょう。",""],
+ ["Thank you for your help today.","今日はご協力ありがとうございました。",""]
+],
+term:[
+ ["travelling","トラベリング","第25条。FIBAはイギリス式のつづり。"],
+ ["illegal dribble","イリーガルドリブル","第24条。"],
+ ["backcourt violation","バックコートバイオレーション","第30条。"],
+ ["three-second violation","3秒バイオレーション","第26条。"],
+ ["eight-second violation","8秒バイオレーション","第28条。"],
+ ["shot clock violation","ショットクロックバイオレーション","第29条。"],
+ ["goaltending","ゴールテンディング","31-2-1。"],
+ ["basket interference","インタフェアレンス","31-2-4。"],
+ ["out of bounds","アウトオブバウンズ","第23条。"],
+ ["held ball","ヘルドボール","12-1-2。"],
+ ["blocking foul","ブロッキング","33-9。"],
+ ["charging foul","チャージング","33-8。"],
+ ["illegal use of hands","イリーガルユースオブハンズ","33-11。"],
+ ["holding","ホールディング","33-14。"],
+ ["pushing","プッシング","33-15。"],
+ ["illegal screen","イリーガルスクリーン","33-7。"],
+ ["hand-checking","ハンドチェッキング",""],
+ ["technical foul","テクニカルファウル","第36条。"],
+ ["unsportsmanlike foul","アンスポーツマンライクファウル","第37条。国内では2026競技規則（2027年3月31日まで）。"],
+ ["disqualifying foul","ディスクォリファイングファウル","第38条（2026競技規則の番号）。"],
+ ["legal guarding position","リーガルガーディングポジション","33-3。"],
+ ["cylinder principle","シリンダーの原則","33-1。"],
+ ["verticality","バーティカリティ（垂直の原則）","33-2。"],
+ ["pivot foot","ピボットフット","25-1-2。"],
+ ["gather","ギャザー","ボールをまとめて持つ動作。トラベリングの歩数はボールのコントロールを得てから数える（25-2-1）。"],
+ ["throw-in","スローイン","第17条。"],
+ ["alternating possession","オルタネイティングポゼッション","12-5。"],
+ ["no-charge semi-circle","ノーチャージセミサークル","33-10。"],
+ ["instant replay system","インスタントリプレイシステム（IRS）","別添資料F。"],
+ ["live ball","ライブボール","第10条。"],
+ ["dead ball","デッドボール","第10条。"],
+ ["lead official","リード","エンドライン側に位置する審判。"],
+ ["trail official","トレイル","後方のサイドライン側に位置する審判。"],
+ ["center official","センター","3POで、トレイルと反対側のサイドラインに位置する審判。"],
+ ["disruptive foul","ディスラプティブファウル","2027競技規則で新設（新第37条）。失格・退場の累積の対象にならない。"],
+ ["flagrant foul","フレグラントファウル","2027競技規則で新設（新第38条）。失格・退場の累積の対象。"],
+ ["category 1 technical foul","カテゴリー1のテクニカルファウル","2027競技規則。失格・退場の累積の対象（新36-2-1）。フェイクはカテゴリー1。"],
+ ["crew chief","クルーチーフ",""]
+]};
+const PH=[];
+Object.keys(RAW).forEach(cat=>RAW[cat].forEach((a,i)=>PH.push({id:cat+'-'+(i+1),cat,en:a[0],ja:a[1],note:a[2]||''})));
+const BYID=Object.fromEntries(PH.map(p=>[p.id,p]));
+
+const ROLE={ref:'審判',coach:'コーチ',player:'選手',table:'TO',partner:'相方の審判'};
+
+// 返答クイズ：相手の発言 → 審判のふさわしい返答
+const RESP=[
+ {sp:'coach',q:"Ref, explain that call right now!",ja:"審判、今すぐあの判定を説明して！",a:"Coach, I’ll explain at the next dead ball.",aj:"コーチ、次のデッドボールで説明します。",d:["After review, the call is changed.","Please sound the horn for the substitution."]},
+ {sp:'coach',q:"He was set! That’s a charge!",ja:"止まってたよ！チャージングだ！",a:"The defender was still moving, so it’s a block.",aj:"ディフェンスはまだ動いていたので、ブロッキングです。",d:["You have one timeout left in this half.","Stay in your spot until the ball leaves the shooter’s hands."]},
+ {sp:'coach',q:"How many timeouts do we have left?",ja:"タイムアウトはあと何回残ってる？",a:"You have one left in this half.",aj:"このハーフは残り1回です。",d:["The arrow is pointing to blue.","That was three steps after the gather."]},
+ {sp:'coach',q:"Can my first assistant call the timeout?",ja:"ファーストアシスタントがタイムアウトを請求してもいい？",a:"Yes, the first assistant coach can request it.",aj:"はい、ファーストアシスタントコーチも請求できます。",d:["No, only the captain can request it.","Only during free throws."]},
+ {sp:'coach',q:"Why didn’t you call that? He got hit!",ja:"なんで吹かないの？当たってたよ！",a:"From my angle, it was incidental contact.",aj:"私の角度からは、偶発的な接触でした。",d:["Please take off your jewelry.","Timer, please stop the clock."]},
+ {sp:'coach',q:"That should be unsportsmanlike! He didn’t go for the ball!",ja:"アンスポだろ！ボールに行ってなかった！",a:"I saw a legitimate play on the ball, coach.",aj:"コーチ、ボールへの正当なプレーがあったと判断しました。",d:["That’s the fifth team foul.","Let’s have our pregame conference."]},
+ {sp:'coach',q:"Is the shot clock fourteen or twenty-four?",ja:"ショットクロックは14？24？",a:"The ball hit the ring and you got it back, so it’s fourteen.",aj:"ボールがリングに当たってあなたたちが取ったので、14秒です。",d:["Held ball. The arrow is pointing to white.","Coach, this is a warning."]},
+ {sp:'coach',q:"You missed the travel! Come on!",ja:"トラベリング見逃したでしょ！",a:"Coach, I hear you. I saw it differently.",aj:"コーチ、言い分はわかりました。私には違って見えました。",d:["Two shots.","No reset on the shot clock."]},
+ {sp:'player',q:"I didn’t touch him!",ja:"触ってないよ！",a:"I saw contact on the shooter’s arm.",aj:"シューターの腕への接触が見えました。",d:["Please switch the arrow to white.","You have one timeout left in this half."]},
+ {sp:'player',q:"Ref! Number 8 is hurt!",ja:"審判！8番がけがしてる！",a:"Okay, I’m stopping the game.",aj:"わかった、ゲームを止めます。",d:["Watch your elbows.","After review, the call stands."]},
+ {sp:'player',q:"Can I go in now?",ja:"（交代選手）もう入っていい？",a:"Wait until I wave you in.",aj:"私が手招きするまで待ってください。",d:["That’s an unsportsmanlike foul.","The defender jumped straight up."]},
+ {sp:'table',q:"Excuse me, that’s white’s fifth team foul.",ja:"すみません、白の5つ目のチームファウルです。",a:"Thanks. Then it’s two free throws.",aj:"ありがとう。それならフリースロー2本です。",d:["Let’s get together.","Please have your bench sit down."]},
+ {sp:'table',q:"Referee, the clock didn’t stop on your whistle.",ja:"審判、笛で時計が止まりませんでした。",a:"How much time ran off?",aj:"何秒流れましたか？",d:["Good call.","Play basketball."]},
+ {sp:'table',q:"There’s a substitution request from blue.",ja:"青から交代の申し出があります。",a:"Thanks. I’ll wave the substitute in at the next dead ball.",aj:"ありがとう。次のデッドボールで交代選手を招き入れます。",d:["The contact happened before the shot.","Stay vertical."]},
+ {sp:'partner',q:"I had a block. What did you have?",ja:"私はブロッキング。あなたは？",a:"I had a charge. Let’s get together.",aj:"私はチャージング。合議しましょう。",d:["Coach, that’s enough.","Please tuck in your shirt."]},
+ {sp:'partner',q:"Did you see the shot clock on that last shot?",ja:"最後のショット、ショットクロック見えた？",a:"Yes, the ball was released before the horn.",aj:"はい、ブザーの前にボールは手から離れていました。",d:["Number 12, come here, please.","Only two timeouts can be used in the last two minutes."]}
+];
+
+// 会話（審判＝ref はあなたのセリフ）
+const DIALOGS=[
+ {title:'ブロッキングの説明',desc:'プレー中に抗議してきたコーチへ、デッドボールで説明する',lines:[
+  {sp:'coach',en:"Ref! He was set! That’s a charge!",ja:"審判！止まってたよ！チャージングだ！"},
+  {sp:'ref',en:"Coach, I’ll explain at the next dead ball.",ja:"コーチ、次のデッドボールで説明します。"},
+  {sp:'coach',en:"Okay. So why was that a block?",ja:"じゃあ、なんでブロッキングなの？"},
+  {sp:'ref',en:"The defender was still moving when the contact happened.",ja:"接触が起きたとき、ディフェンスはまだ動いていました。"},
+  {sp:'coach',en:"His feet looked set to me.",ja:"足は止まってるように見えたけど。"},
+  {sp:'ref',en:"I hear you, coach. From my angle, he was moving into the path.",ja:"言い分はわかります。私の角度からは、進路に入ってくる動きでした。"},
+  {sp:'coach',en:"Alright. Thanks for explaining.",ja:"わかった。説明ありがとう。"}]},
+ {title:'残り2分のタイムアウト',desc:'第4クォーター終盤、タイムアウトの残り回数を確認する',lines:[
+  {sp:'coach',en:"Ref, how many timeouts do we have left?",ja:"審判、タイムアウトはあと何回？"},
+  {sp:'ref',en:"You have three left in the second half.",ja:"後半は残り3回です。"},
+  {sp:'coach',en:"Great. So we can use all three now?",ja:"よし。じゃあ今から3回とも使える？"},
+  {sp:'ref',en:"No. Only two can be used in the last two minutes.",ja:"いいえ。残り2分で使えるのは2回までです。"},
+  {sp:'coach',en:"Got it. Timeout, please.",ja:"わかった。タイムアウトお願い。"},
+  {sp:'ref',en:"Timeout, white.",ja:"白、タイムアウト。"}]},
+ {title:'時計の修正',desc:'笛で時計が止まらなかったときのテーブルとのやりとり',lines:[
+  {sp:'table',en:"Referee, the game clock didn’t stop on your whistle.",ja:"審判、笛でゲームクロックが止まりませんでした。"},
+  {sp:'ref',en:"How much time ran off?",ja:"何秒流れましたか？"},
+  {sp:'table',en:"About two seconds.",ja:"2秒くらいです。"},
+  {sp:'ref',en:"We saw it too. Please put two seconds back on the clock.",ja:"こちらも確認しました。2秒戻してください。"},
+  {sp:'table',en:"Okay. It’s set at one minute twelve.",ja:"はい、1分12秒に合わせました。"},
+  {sp:'ref',en:"Thank you.",ja:"ありがとうございます。"}]},
+ {title:'ダブルホイッスルの合議',desc:'ブロッキングとチャージングで判定が分かれたとき',lines:[
+  {sp:'partner',en:"I had a block. What did you have?",ja:"私はブロッキング。あなたは？"},
+  {sp:'ref',en:"I had a charge. The defender was set before the shooter left the floor.",ja:"私はチャージング。シューターが跳ぶ前に、ディフェンスは位置を取っていました。"},
+  {sp:'partner',en:"Was the defender outside the semi-circle?",ja:"ディフェンスはセミサークルの外でしたか？"},
+  {sp:'ref',en:"Yes, both feet were outside.",ja:"はい、両足とも外でした。"},
+  {sp:'partner',en:"Okay. You had the better angle. Let’s go with the charge.",ja:"わかりました。あなたの方が良い角度でした。チャージングでいきましょう。"},
+  {sp:'ref',en:"Got it. I’ll report it.",ja:"了解。私がレポートします。"}]},
+ {title:'予防的な声かけ',desc:'ファウルになる前に選手へ声をかける',lines:[
+  {sp:'ref',en:"Number 5, watch your hands.",ja:"5番、手に気をつけて。"},
+  {sp:'player',en:"I’m not holding him!",ja:"つかんでないよ！"},
+  {sp:'ref',en:"I know. Just keep your hands off and move your feet.",ja:"わかってる。手を離して、足で守ろう。"},
+  {sp:'player',en:"Okay, got it.",ja:"わかった。"},
+  {sp:'ref',en:"Thanks. Play basketball.",ja:"ありがとう。プレーに集中しよう。"}]},
+ {title:'負傷者への対応',desc:'選手が倒れたときのゲームの止め方と交代（5-3、5-4）',lines:[
+  {sp:'player',en:"Ref! Number 8 is hurt!",ja:"審判！8番がけがしてる！"},
+  {sp:'ref',en:"Okay, I’m stopping the game.",ja:"わかった、ゲームを止めます。"},
+  {sp:'coach',en:"Can I come in and check on him?",ja:"入って様子を見てもいい？"},
+  {sp:'ref',en:"Yes, you can. But if you attend to him, he must be substituted.",ja:"はい、どうぞ。ただし、コーチが手当てをしたら、その選手は交代しなければなりません。"},
+  {sp:'coach',en:"Understood. We’ll make a substitution.",ja:"了解。交代します。"},
+  {sp:'ref',en:"Okay. Substitute, please wait until I wave you in.",ja:"わかりました。交代選手は、私が手招きするまで待ってください。"}]},
+ {title:'アンスポーツマンライクファウル',desc:'速攻を後ろから止めたファウルを説明する（2026競技規則の用語）',lines:[
+  {sp:'ref',en:"That’s an unsportsmanlike foul. Two free throws and possession.",ja:"アンスポーツマンライクファウル。フリースロー2本と、その後のボールです。"},
+  {sp:'coach',en:"What? He was going for the ball!",ja:"え？ボールに行ってたよ！"},
+  {sp:'ref',en:"He grabbed the player from behind. There was no legitimate play on the ball.",ja:"後ろからつかみました。ボールへの正当なプレーはありませんでした。"},
+  {sp:'coach',en:"Come on, it was a normal foul.",ja:"普通のファウルだろ。"},
+  {sp:'ref',en:"Coach, I hear you. That’s my call.",ja:"コーチ、言い分はわかりました。それが私の判定です。"}]}
+];
+
+/* ===================== 保存 ===================== */
+const KEY='refEnglish.v1';
+const store=(()=>{let s={};try{s=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){s={};}
+  s.settings=Object.assign({voice:'',alt:'',rate:0.9,jaRate:1.1,hideJa:false},s.settings||{});
+  s.lt=Object.assign({scope:'all',order:'seq',rep:2,gap:2,pattern:'jeje',slowFirst:'off'},s.lt||{});delete s.lt.ja;
+  s.stats=s.stats||{};s.weak=s.weak||{};s.star=s.star||{};return s;})();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
+function record(id,ok){
+  const st=store.stats[id]||(store.stats[id]={c:0,w:0});
+  if(ok){st.c++;if(store.weak[id]){store.weak[id]--;if(store.weak[id]<=0)delete store.weak[id];}}
+  else{st.w++;store.weak[id]=Math.min(3,(store.weak[id]||0)+2);}
+  save();
+}
+const isMastered=p=>{const s=store.stats[p.id];return !!s&&s.c>=2&&!store.weak[p.id];};
+
+/* ===================== ユーティリティ ===================== */
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function shuffle(a){const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+const catName=id=>(CATS.find(c=>c.id===id)||{}).full||'';
+function poolFor(scope){
+  if(scope==='all')return PH.slice();
+  if(scope==='review')return PH.filter(p=>store.weak[p.id]||store.star[p.id]);
+  return PH.filter(p=>p.cat===scope);
+}
+let toastT;function toast(m){const el=$('#toast');el.textContent=m;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),2400);}
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const ICON={
+  play:(s=20)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" aria-hidden="true"><path d="M8 5.5v13a.8.8 0 0 0 1.2.7l10.4-6.5a.8.8 0 0 0 0-1.4L9.2 4.8A.8.8 0 0 0 8 5.5z" fill="currentColor"/></svg>`,
+  pause:(s=20)=>`<svg viewBox="0 0 24 24" width="${s}" height="${s}" aria-hidden="true"><rect x="6" y="5" width="4.2" height="14" rx="1" fill="currentColor"/><rect x="13.8" y="5" width="4.2" height="14" rx="1" fill="currentColor"/></svg>`,
+  prev:`<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="5" y="6" width="2.4" height="12" rx="1" fill="currentColor"/><path d="M19 6.8v10.4a.8.8 0 0 1-1.2.7L9.6 12.7a.8.8 0 0 1 0-1.4l8.2-5.2a.8.8 0 0 1 1.2.7z" fill="currentColor"/></svg>`,
+  next:`<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="16.6" y="6" width="2.4" height="12" rx="1" fill="currentColor"/><path d="M5 6.8v10.4a.8.8 0 0 0 1.2.7l8.2-5.2a.8.8 0 0 0 0-1.4L6.2 6.1A.8.8 0 0 0 5 6.8z" fill="currentColor"/></svg>`,
+  star:`<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.25 4.1 1 5.8L12 16.9l-5.25 2.7 1-5.8L3.5 9.7l5.9-.9z" fill="currentColor"/></svg>`,
+  back:`<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>`
+};
+const NAVI=(d)=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const TABS=[
+  {id:'phrases',label:'フレーズ',icon:NAVI('<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1.2"/><circle cx="4.5" cy="12" r="1.2"/><circle cx="4.5" cy="18" r="1.2"/>')},
+  {id:'quiz',label:'クイズ',icon:NAVI('<circle cx="12" cy="12" r="8.5"/><path d="M8.2 12.4l2.6 2.6 5-5.4"/>')},
+  {id:'dict',label:'書き取り',icon:NAVI('<path d="M4 20l1.2-4.2L16 5l3 3L8.2 18.8z"/><path d="M14 7l3 3"/>')},
+  {id:'listen',label:'聞き流し',icon:NAVI('<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/>')},
+  {id:'talk',label:'会話',icon:NAVI('<path d="M3.5 5h11v8H9l-3 3v-3H3.5z"/><path d="M14.5 9h6v8h-2v3l-3-3H11v-1.5"/>')}
+];
+
+/* ===================== 音声 ===================== */
+const HAS_TTS='speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+const V={list:[],ja:null};
+const NOVELTY=/^(Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Good News|Jester|Organ|Pipe Organ|Superstar|Trinoids|Whisper|Wobble|Zarvox|Junior|Ralph|Kathy|Fred|Deranged|Hysterical|Eddy|Flo|Grandma|Grandpa|Reed|Rocko|Sandy|Shelley)\b/i;
+function voiceScore(v){
+  const q=/(premium|enhanced|natural|neural)/i.test(v.name)?0:/google/i.test(v.name)?1:2;
+  const l=/en[-_]US/i.test(v.lang)?0:/en[-_]GB/i.test(v.lang)?1:2;
+  return q*10+l;
+}
+function loadVoices(){
+  if(!HAS_TTS)return;
+  const all=speechSynthesis.getVoices();
+  if(!all.length)return;
+  let en=all.filter(v=>/^en([-_]|$)/i.test(v.lang));
+  const clean=en.filter(v=>!NOVELTY.test(v.name));
+  if(clean.length)en=clean;
+  V.list=en.sort((a,b)=>voiceScore(a)-voiceScore(b));
+  const ja=all.filter(v=>/^ja([-_]|$)/i.test(v.lang));
+  V.ja=ja.find(v=>/(premium|enhanced|kyoko|o-ren|google)/i.test(v.name))||ja[0]||null;
+  fillVoiceSelects();
+}
+function mainVoice(){return V.list.find(v=>v.voiceURI===store.settings.voice)||V.list[0]||null;}
+function altVoice(){
+  const m=mainVoice();
+  return V.list.find(v=>v.voiceURI===store.settings.alt)
+    ||V.list.find(v=>m&&v.voiceURI!==m.voiceURI&&v.lang!==m.lang)
+    ||V.list.find(v=>m&&v.voiceURI!==m.voiceURI)||m;
+}
+function speak(text,opt={}){
+  return new Promise(resolve=>{
+    if(!HAS_TTS){resolve(false);return;}
+    const u=new SpeechSynthesisUtterance(text);
+    if(opt.voice){u.voice=opt.voice;u.lang=opt.voice.lang;}else{u.lang=opt.lang||'en-US';}
+    u.rate=opt.rate||1;u.pitch=opt.pitch||1;
+    let fin=false;
+    const done=ok=>{if(fin)return;fin=true;clearTimeout(timer);resolve(ok);};
+    u.onend=()=>done(true);u.onerror=()=>done(false);
+    const timer=setTimeout(()=>done(true),3000+text.length*130/u.rate);
+    speechSynthesis.speak(u);
+    if(speechSynthesis.paused)speechSynthesis.resume();
+  });
+}
+const PITCH={coach:0.9,player:1.12,table:1.05,partner:0.96};
+function speedOf(slow){const r=store.settings.rate;return slow?Math.max(0.5,r*0.72):r;}
+function sayEn(text,{slow=false,role='ref'}={}){
+  const isRef=role==='ref';
+  const voice=isRef?mainVoice():altVoice();
+  return speak(text,{voice,lang:'en-US',rate:speedOf(slow),pitch:isRef?1:(PITCH[role]||1)});
+}
+function sayJa(text){return speak(text.replace(/（[^）]*）|\([^)]*\)/g,''),{voice:V.ja,lang:'ja-JP',rate:Number(store.settings.jaRate)||1.1});}
+
+let RUN=0;
+function halt(){
+  RUN++;
+  if(HAS_TTS&&(speechSynthesis.speaking||speechSynthesis.pending))speechSynthesis.cancel();
+  document.querySelectorAll('.speaking').forEach(el=>el.classList.remove('speaking'));
+}
+// iOSの読み上げ解除（最初のタップで無音の発話を1回）
+let unlocked=false;
+document.addEventListener('pointerdown',()=>{
+  if(unlocked||!HAS_TTS)return;unlocked=true;
+  try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u);}catch(e){}
+},{capture:true});
+
+let wake=null;
+async function holdWake(){try{if('wakeLock' in navigator&&!wake){wake=await navigator.wakeLock.request('screen');wake.addEventListener('release',()=>{wake=null;});}}catch(e){}}
+function releaseWake(){if(wake){wake.release().catch(()=>{});wake=null;}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&lt.playing)holdWake();});
+
+/* ===================== 画面の状態 ===================== */
+let tab='phrases';
+const ph={scope:'all',q:''};
+const qz={mode:'meaning',scope:'all',run:null};
+const dc={scope:'all',run:null};
+const lt={scope:store.lt.scope,order:store.lt.order,rep:store.lt.rep,gap:store.lt.gap,pattern:store.lt.pattern,slowFirst:store.lt.slowFirst,list:[],i:0,playing:false,phase:''};
+const tk={open:null,hideEn:false,showJa:true,playing:false,cur:-1};
+const view=$('#view');
+
+function go(t){halt();releaseWake();lt.playing=false;lt.phase='';tk.playing=false;tk.cur=-1;tab=t;render();window.scrollTo(0,0);}
+function renderNav(){
+  $('#nav').innerHTML=TABS.map(t=>`<button data-tab="${t.id}" ${tab===t.id?'aria-current="page"':''}>${t.icon}<span>${t.label}</span></button>`).join('');
+}
+function render(){
+  renderNav();
+  const banner=HAS_TTS?'':'<div class="banner">このブラウザは音声の読み上げに対応していません。iPhoneはSafari、AndroidはChromeで開いてください。</div>';
+  ({phrases:renderPhrases,quiz:renderQuiz,dict:renderDict,listen:renderListen,talk:renderTalk})[tab](view);
+  if(banner)view.insertAdjacentHTML('afterbegin',banner);
+}
+function scopeChips(k,cur){
+  const items=[['all','すべて'],...CATS.map(c=>[c.id,c.name]),['review','要復習']];
+  return `<div class="chips" role="group" aria-label="範囲">${items.map(([id,name])=>
+    `<button class="chip" data-act="scope" data-for="${k}" data-arg="${id}" aria-pressed="${cur===id}">${name}<span class="n">${poolFor(id).length}</span></button>`).join('')}</div>`;
+}
+function setSpeaking(sel){const el=typeof sel==='string'?$(sel):sel;if(el)el.classList.add('speaking');return el;}
+
+/* ===================== フレーズ ===================== */
+function rowHTML(p){
+  const badge=isMastered(p)?'<span class="badge done">習得</span>':store.weak[p.id]?'<span class="badge weak">苦手</span>':'';
+  return `<li class="row" data-id="${p.id}">
+    <button class="play" data-act="say" data-arg="${p.id}" aria-label="再生：${esc(p.en)}">${ICON.play(18)}</button>
+    <div class="txt" data-act="reveal" data-arg="${p.id}">
+      <span class="en" lang="en">${esc(p.en)}</span>
+      <span class="ja">${esc(p.ja)}</span>
+      ${p.note?`<p class="note">${esc(p.note)}</p>`:''}
+    </div>
+    <div class="acts">
+      <button class="mini" data-act="slow" data-arg="${p.id}" aria-label="ゆっくり再生">ゆっくり</button>
+      <button class="starb" data-act="star" data-arg="${p.id}" aria-pressed="${!!store.star[p.id]}" aria-label="要復習に入れる">${ICON.star}</button>
+      ${badge}
+    </div>
+  </li>`;
+}
+function phraseListHTML(){
+  const q=ph.q.trim().toLowerCase();
+  const list=poolFor(ph.scope).filter(p=>!q||(p.en+' '+p.ja+' '+p.note).toLowerCase().includes(q));
+  if(list.length)return list.map(rowHTML).join('');
+  if(ph.scope==='review'&&!q)return '<li class="empty">クイズや書き取りで間違えたフレーズと、☆を付けたフレーズがここに入ります。</li>';
+  return '<li class="empty">見つかりませんでした。別の言葉で検索してください。</li>';
+}
+function renderPhrases(v){
+  const m=PH.filter(isMastered).length;
+  v.innerHTML=`
+  <div class="intro">
+    <div class="tally"><b>${m}</b><span>/ ${PH.length} 習得</span></div>
+    <label class="switch"><input type="checkbox" id="hideJa" ${store.settings.hideJa?'checked':''}>日本語を隠す</label>
+  </div>
+  ${scopeChips('ph',ph.scope)}
+  <input type="search" class="search" id="phq" placeholder="英語・日本語で検索" value="${esc(ph.q)}" aria-label="フレーズを検索">
+  <ul class="plist ${store.settings.hideJa?'hide-ja':''}" id="plist">${phraseListHTML()}</ul>
+  <p class="hint">行をタップすると再生します。日本語を隠しているときは、タップで答えが見えます。</p>`;
+}
+function playPhrase(id,slow){
+  const p=BYID[id];if(!p)return;
+  halt();const my=RUN;
+  const btn=setSpeaking(document.querySelector(`.row[data-id="${id}"] .play`));
+  sayEn(p.en,{slow}).then(()=>{if(my===RUN&&btn)btn.classList.remove('speaking');});
+}
+
+/* ===================== クイズ ===================== */
+function distractors(p,n){
+  const same=shuffle(PH.filter(x=>x.cat===p.cat&&x.id!==p.id&&x.ja!==p.ja));
+  const other=shuffle(PH.filter(x=>x.cat!==p.cat));
+  return [...same,...other].slice(0,n);
+}
+function startQuiz(){
+  let items;
+  if(qz.mode==='meaning'){
+    const pool=poolFor(qz.scope);
+    if(!pool.length){toast('この範囲にはまだフレーズがありません');return;}
+    items=shuffle(pool).slice(0,10).map(p=>({kind:'m',p,opts:shuffle([p,...distractors(p,3)])}));
+  }else{
+    items=shuffle(RESP).slice(0,10).map(r=>({kind:'r',r,opts:shuffle([r.a,...r.d])}));
+  }
+  qz.run={items,i:0,score:0,answered:null,missed:[]};
+  render();playQuestion(false);
+}
+const curQ=()=>qz.run.items[qz.run.i];
+function playQuestion(slow){
+  const q=curQ();if(!q)return;
+  halt();const my=RUN;const el=setSpeaking('.bigplay');
+  const p=q.kind==='m'?sayEn(q.p.en,{slow}):sayEn(q.r.q,{slow,role:q.r.sp});
+  p.then(()=>{if(my===RUN&&el)el.classList.remove('speaking');});
+}
+function correctIndex(q){return q.kind==='m'?q.opts.indexOf(q.p):q.opts.indexOf(q.r.a);}
+function answerQuiz(i){
+  const run=qz.run;if(!run||run.answered!==null)return;
+  const q=curQ();run.answered=+i;
+  const ok=run.answered===correctIndex(q);
+  if(q.kind==='m')record(q.p.id,ok);
+  if(ok)run.score++;else run.missed.push(q);
+  render();
+  halt();
+  if(q.kind==='m')sayEn(q.p.en);else sayEn(q.r.a,{role:'ref'});
+}
+function nextQuiz(){const run=qz.run;run.i++;run.answered=null;render();window.scrollTo(0,0);if(run.i<run.items.length)playQuestion(false);}
+function renderQuiz(v){
+  if(!qz.run){
+    v.innerHTML=`
+    <h2 class="h">クイズ</h2>
+    <div class="seg" role="group" aria-label="出題形式">
+      <button data-act="qmode" data-arg="meaning" aria-pressed="${qz.mode==='meaning'}">意味を選ぶ</button>
+      <button data-act="qmode" data-arg="response" aria-pressed="${qz.mode==='response'}">返答を選ぶ</button>
+    </div>
+    <p class="lead" style="margin-top:12px">${qz.mode==='meaning'
+      ?'英語のフレーズを聞いて、日本語の意味を4つから選びます。間違えたフレーズは「要復習」に入ります。'
+      :'コーチ・選手・TO・相方の英語を聞いて、審判としてふさわしい返答を3つから選びます。'}</p>
+    ${qz.mode==='meaning'?`<p class="label">範囲</p>${scopeChips('qz',qz.scope)}`:''}
+    <button class="primary" data-act="qstart">10問スタート</button>`;
+    return;
+  }
+  const run=qz.run;
+  if(run.i>=run.items.length){
+    const n=run.items.length,s=run.score;
+    const msg=s===n?'全問正解です。':s>=n*0.7?'いい調子です。間違えた問題を聞き直しましょう。':'間違えた問題を聞き直してから、もう一度挑戦しましょう。';
+    v.innerHTML=`
+    <div class="result"><p class="led">${s}<span>/${n}</span></p><p>${msg}</p></div>
+    ${run.missed.length?`<h3 class="h3">間違えた問題</h3><ul class="plist">${run.missed.map(q=>q.kind==='m'?rowHTML(q.p):respRowHTML(q.r)).join('')}</ul>`:''}
+    <button class="primary" data-act="qstart">もう一度（同じ設定）</button>
+    <button class="ghost" data-act="qquit">形式・範囲を変える</button>`;
+    return;
+  }
+  const q=curQ(),answered=run.answered!==null,ci=correctIndex(q);
+  const speaker=q.kind==='r'?`${ROLE[q.r.sp]}の発言を聞いて、返答を選ぶ`:'英語を聞いて、意味を選ぶ';
+  const opts=q.opts.map((o,i)=>{
+    let cls='opt'+(q.kind==='r'?' en-opt':'');
+    if(answered)cls+=i===ci?' correct':i===run.answered?' wrong':' dim';
+    return `<button class="${cls}" data-act="qans" data-arg="${i}" ${answered?'disabled':''} ${q.kind==='r'?'lang="en"':''}>${esc(q.kind==='m'?o.ja:o)}</button>`;
+  }).join('');
+  let fb='';
+  if(answered){
+    const ok=run.answered===ci,last=run.i+1>=run.items.length;
+    fb=q.kind==='m'
+      ?`<div class="fb" id="fb"><p class="verdict ${ok?'ok':'ng'}">${ok?'正解':'不正解'}</p>
+         <span class="en" lang="en">${esc(q.p.en)}</span><span class="ja">${esc(q.p.ja)}</span>
+         ${q.p.note?`<p class="note">${esc(q.p.note)}</p>`:''}
+         <button class="ghost" data-act="say" data-arg="${q.p.id}">もう一度聞く</button>
+         <button class="primary" data-act="qnext">${last?'結果を見る':'次へ'}</button></div>`
+      :`<div class="fb" id="fb"><p class="verdict ${ok?'ok':'ng'}">${ok?'正解':'不正解'}</p>
+         <p class="who">${ROLE[q.r.sp]}</p><span class="en" lang="en">${esc(q.r.q)}</span><span class="ja">${esc(q.r.ja)}</span>
+         <p class="who">審判（あなた）</p><span class="en" lang="en">${esc(q.r.a)}</span><span class="ja">${esc(q.r.aj)}</span>
+         <button class="ghost" data-act="saytext" data-role="ref" data-text="${esc(q.r.a)}">返答をもう一度聞く</button>
+         <button class="primary" data-act="qnext">${last?'結果を見る':'次へ'}</button></div>`;
+  }
+  v.innerHTML=`
+  <div class="qhead"><span class="led">${run.i+1}</span><span class="of">/ ${run.items.length}</span><span class="qscore">正解 ${run.score}</span><button class="link" data-act="qquit">やめる</button></div>
+  <div class="pad">
+    <p class="speaker">${speaker}</p>
+    <button class="bigplay" data-act="qplay" aria-label="もう一度聞く">${ICON.play(38)}</button>
+    <div class="padbtns"><button data-act="qplay">もう一度</button><button data-act="qslow">ゆっくり</button></div>
+  </div>
+  <div class="opts">${opts}</div>${fb}`;
+  if(answered){const f=$('#fb');f&&f.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'nearest'});}
+}
+function respRowHTML(r){
+  return `<li class="row">
+    <button class="play" data-act="saytext" data-role="${r.sp}" data-text="${esc(r.q)}" aria-label="${ROLE[r.sp]}の発言を再生">${ICON.play(18)}</button>
+    <div class="txt">
+      <p class="who">${ROLE[r.sp]}</p><span class="en" lang="en">${esc(r.q)}</span><span class="ja">${esc(r.ja)}</span>
+      <p class="who">審判</p><span class="en" lang="en">${esc(r.a)}</span><span class="ja">${esc(r.aj)}</span>
+    </div>
+    <div class="acts"><button class="mini" data-act="saytext" data-role="ref" data-text="${esc(r.a)}">返答を聞く</button></div>
+  </li>`;
+}
+
+/* ===================== 書き取り ===================== */
+const CONTR={"i'll":"i will","i'm":"i am","i've":"i have","i'd":"i would","it's":"it is","it'll":"it will","that's":"that is","let's":"let us","don't":"do not","didn't":"did not","doesn't":"does not","who's":"who is","what's":"what is","you're":"you are","you've":"you have","you'll":"you will","we're":"we are","we'll":"we will","they're":"they are","there's":"there is","he's":"he is","she's":"she is","can't":"cannot","won't":"will not","isn't":"is not","wasn't":"was not","aren't":"are not"};
+// アポストロフィなしで入力された短縮形
+const NOAPOS={thats:'that is',lets:'let us',dont:'do not',didnt:'did not',doesnt:'does not',im:'i am',ill:'i will',ive:'i have',youre:'you are',youve:'you have',youll:'you will',whos:'who is',whats:'what is',theres:'there is',theyre:'they are',isnt:'is not',wasnt:'was not',arent:'are not',cant:'cannot',wont:'will not',itll:'it will',hes:'he is',shes:'she is',its:'it is'};
+const ALIAS={traveling:'travelling',semicircle:'semi circle',ok:'okay',pregame:'pre game'};
+const NUMW={zero:0,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,seventeen:17,eighteen:18,nineteen:19,twenty:20,thirty:30,forty:40,fifty:50};
+function toks(s){
+  let t=s.toLowerCase().replace(/[’‘`´]/g,"'").replace(/[^a-z0-9'\s-]/g,' ').replace(/-/g,' ').split(/\s+/).filter(Boolean);
+  t=t.flatMap(w=>(CONTR[w]||w).split(' ')).map(w=>w.replace(/'/g,'')).filter(Boolean);
+  t=t.flatMap(w=>(NOAPOS[w]||w).split(' '));
+  t=t.flatMap(w=>(ALIAS[w]||w).split(' '));
+  const out=[];
+  for(let k=0;k<t.length;k++){
+    const w=t[k];
+    if(w==='time'&&t[k+1]==='out'){out.push('timeout');k++;continue;}
+    if(w in NUMW){
+      let n=NUMW[w];
+      if(n>=20&&n%10===0&&(t[k+1] in NUMW)&&NUMW[t[k+1]]>0&&NUMW[t[k+1]]<10){n+=NUMW[t[k+1]];k++;}
+      out.push(String(n));
+    }else out.push(w);
+  }
+  return out;
+}
+function compareText(exp,inp){
+  const E=toks(exp),I=toks(inp),n=E.length,m=I.length;
+  const dp=Array.from({length:n+1},()=>new Array(m+1).fill(0));
+  for(let i=n-1;i>=0;i--)for(let j=m-1;j>=0;j--)dp[i][j]=E[i]===I[j]?dp[i+1][j+1]+1:Math.max(dp[i+1][j],dp[i][j+1]);
+  const hit=new Array(n).fill(false);let i=0,j=0;
+  while(i<n&&j<m){if(E[i]===I[j]){hit[i]=true;i++;j++;}else if(dp[i+1][j]>=dp[i][j+1])i++;else j++;}
+  const matched=hit.filter(Boolean).length,extra=m-matched;
+  const rate=n?Math.max(0,Math.min(1,(matched-extra*0.5)/n)):0;
+  return {tokens:E.map((w,k)=>({w,hit:hit[k]})),rate};
+}
+function startDict(){
+  const pool=poolFor(dc.scope);
+  if(!pool.length){toast('この範囲にはまだフレーズがありません');return;}
+  dc.run={items:shuffle(pool).slice(0,10),i:0,score:0,result:null,hint:false,draft:'',missed:[]};
+  render();playDict(false);
+}
+function playDict(slow){
+  const run=dc.run;const p=run&&run.items[run.i];if(!p)return;
+  halt();const my=RUN;const el=setSpeaking('.bigplay');
+  sayEn(p.en,{slow}).then(()=>{if(my===RUN&&el)el.classList.remove('speaking');});
+}
+function checkDict(){
+  const run=dc.run;if(!run||run.result)return;
+  const p=run.items[run.i];const input=($('#dcin')||{}).value||'';
+  if(!input.trim()){toast('聞こえた英語を入力してください');return;}
+  const r=compareText(p.en,input);const ok=r.rate>=0.85;
+  run.result=Object.assign(r,{input,ok});
+  record(p.id,ok);if(ok)run.score++;else run.missed.push(p);
+  render();halt();sayEn(p.en);
+}
+function nextDict(){const run=dc.run;run.i++;run.result=null;run.hint=false;run.draft='';render();window.scrollTo(0,0);if(run.i<run.items.length)playDict(false);}
+function renderDict(v){
+  if(!dc.run){
+    v.innerHTML=`
+    <h2 class="h">書き取り</h2>
+    <p class="lead">英語を聞いて、聞こえたとおりに入力します。大文字・小文字や記号は気にしなくて大丈夫です。85％以上一致で正解です。</p>
+    <p class="label">範囲</p>${scopeChips('dc',dc.scope)}
+    <button class="primary" data-act="dstart">10問スタート</button>`;
+    return;
+  }
+  const run=dc.run;
+  if(run.i>=run.items.length){
+    const n=run.items.length,s=run.score;
+    v.innerHTML=`
+    <div class="result"><p class="led">${s}<span>/${n}</span></p><p>${s===n?'全問正解です。':'間違えたフレーズは「要復習」に入りました。'}</p></div>
+    ${run.missed.length?`<h3 class="h3">間違えた問題</h3><ul class="plist">${run.missed.map(rowHTML).join('')}</ul>`:''}
+    <button class="primary" data-act="dstart">もう一度（同じ範囲）</button>
+    <button class="ghost" data-act="dquit">範囲を変える</button>`;
+    return;
+  }
+  const p=run.items[run.i],r=run.result;
+  v.innerHTML=`
+  <div class="qhead"><span class="led">${run.i+1}</span><span class="of">/ ${run.items.length}</span><span class="qscore">正解 ${run.score}</span><button class="link" data-act="dquit">やめる</button></div>
+  <div class="pad">
+    <p class="speaker">聞こえた英語を書き取る</p>
+    <button class="bigplay" data-act="dplay" aria-label="もう一度聞く">${ICON.play(38)}</button>
+    <div class="padbtns"><button data-act="dplay">もう一度</button><button data-act="dslow">ゆっくり</button><button data-act="dhint">${run.hint?'ヒントを隠す':'日本語ヒント'}</button></div>
+  </div>
+  ${run.hint?`<p class="hintja">${esc(p.ja)}</p>`:''}
+  <textarea class="ans" id="dcin" rows="2" lang="en" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="聞こえた英語を入力" ${r?'readonly':''}>${esc(r?r.input:run.draft)}</textarea>
+  ${r?`<div class="fb" id="fb">
+      <p class="verdict ${r.ok?'ok':'ng'}">${r.ok?'正解':'もう少し'}（${Math.round(r.rate*100)}％一致）</p>
+      <p class="diff" lang="en" aria-label="単語ごとの判定">${r.tokens.map(t=>`<span class="${t.hit?'hit':'miss'}">${esc(t.w)}</span>`).join(' ')}</p>
+      <span class="en" lang="en">${esc(p.en)}</span><span class="ja">${esc(p.ja)}</span>
+      ${p.note?`<p class="note">${esc(p.note)}</p>`:''}
+      <button class="primary" data-act="dnext">${run.i+1>=run.items.length?'結果を見る':'次へ'}</button></div>`
+    :`<button class="primary" data-act="dcheck">答え合わせ</button>`}`;
+  if(r){const f=$('#fb');f&&f.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'nearest'});}
+}
+
+/* ===================== 聞き流し ===================== */
+function saveLt(){store.lt={scope:lt.scope,order:lt.order,rep:lt.rep,gap:lt.gap,pattern:lt.pattern,slowFirst:lt.slowFirst};save();}
+function buildLt(){let pool=poolFor(lt.scope);if(lt.order==='shuffle')pool=shuffle(pool);lt.list=pool;lt.i=0;}
+function updLtCard(){
+  const p=lt.list[lt.i];
+  const set=(id,h)=>{const el=document.getElementById(id);if(el)el.innerHTML=h;};
+  set('ltNo',lt.list.length?lt.i+1:0);set('ltOf','/ '+lt.list.length);
+  set('ltCat',p?esc(catName(p.cat)):'');
+  set('ltEn',p?esc(p.en):'この範囲にはフレーズがありません');
+  set('ltJa',p?esc(p.ja):'');
+  set('ltPhase',esc(lt.phase));
+  const b=document.getElementById('ltBtn');
+  if(b){b.innerHTML=lt.playing?ICON.pause(34):ICON.play(36);b.setAttribute('aria-label',lt.playing?'一時停止':'再生');}
+}
+function setPhase(t){lt.phase=t;const el=document.getElementById('ltPhase');if(el)el.textContent=t;}
+const STEPS={jeje:['ja','en','ja','en'],ej:['en','ja'],e:['en']};
+async function ltLoop(){
+  if(!lt.list.length){toast('この範囲にはフレーズがありません');return;}
+  halt();const my=RUN;lt.playing=true;holdWake();updLtCard();
+  while(my===RUN){
+    const p=lt.list[lt.i];updLtCard();
+    const steps=STEPS[lt.pattern]||STEPS.jeje;
+    for(const step of steps){
+      if(step==='ja'){
+        setPhase('日本語');
+        await sayJa(p.ja);if(my!==RUN)return;
+        await sleep(600);if(my!==RUN)return;
+      }else{
+        for(let r=0;r<lt.rep;r++){
+          setPhase(lt.rep>1?`英語 ${r+1}/${lt.rep}`:'英語');
+          await sayEn(p.en,{slow:lt.slowFirst==='on'&&r===0});if(my!==RUN)return;
+          if(lt.gap){setPhase('まねして言ってみよう');await sleep(lt.gap*1000);}else await sleep(450);
+          if(my!==RUN)return;
+        }
+      }
+    }
+    lt.i=(lt.i+1)%lt.list.length;
+    if(lt.i===0&&lt.order==='shuffle')lt.list=shuffle(lt.list);
+    setPhase('');await sleep(500);
+  }
+}
+function ltStop(){halt();releaseWake();lt.playing=false;lt.phase='';updLtCard();}
+function ltJump(d){
+  if(!lt.list.length)return;
+  lt.i=(lt.i+d+lt.list.length)%lt.list.length;
+  if(lt.playing)ltLoop();else{lt.phase='';updLtCard();}
+}
+function segHTML(label,key,opts,cur){
+  return `<div class="seg" role="group" aria-label="${label}">${opts.map(([val,l])=>
+    `<button data-act="ltset" data-key="${key}" data-arg="${val}" aria-pressed="${String(cur)===String(val)}">${l}</button>`).join('')}</div>`;
+}
+function setRow(label,key,opts,cur){
+  return `<div class="setrow"><span>${label}</span>${segHTML(label,key,opts,cur===undefined?lt[key]:cur)}</div>`;
+}
+function renderListen(v){
+  if(!lt.list.length)buildLt();
+  v.innerHTML=`
+  <div class="board">
+    <div class="board-top"><span class="led" id="ltNo"></span><span class="of" id="ltOf"></span><span class="phase" id="ltPhase"></span></div>
+    <p class="board-cat" id="ltCat"></p>
+    <p class="board-en" lang="en" id="ltEn" data-act="ltsay"></p>
+    <p class="board-ja" id="ltJa"></p>
+    <div class="ctrl">
+      <button class="side" data-act="ltprev" aria-label="前のフレーズ">${ICON.prev}</button>
+      <button class="mid" data-act="lttoggle" id="ltBtn"></button>
+      <button class="side" data-act="ltnext" aria-label="次のフレーズ">${ICON.next}</button>
+    </div>
+  </div>
+  <p class="label">読み上げの順番</p>
+  ${segHTML('読み上げの順番','pattern',[['jeje','日→英→日→英'],['ej','英→日'],['e','英語だけ']],lt.pattern)}
+  <p class="hint" style="margin-top:8px">${lt.pattern==='jeje'?'日本語で意味を聞いてから英語を聞き、もう一度日本語と英語をくり返します。英語は下の「英語の回数」だけ続けて読み上げます。':lt.pattern==='ej'?'英語を聞いてから日本語で意味を確認します。':'英語だけを続けて聞きます。'}</p>
+  <p class="label">読み上げ</p>
+  ${setRow('英語の回数','rep',[[1,'1回'],[2,'2回'],[3,'3回']])}
+  ${setRow('1回目をゆっくり','slowFirst',[['on','する'],['off','しない']])}
+  ${setRow('英語の速さ','rate',[[0.7,'0.7'],[0.8,'0.8'],[0.9,'0.9'],[1,'1.0'],[1.1,'1.1']],store.settings.rate)}
+  ${setRow('日本語の速さ','jaRate',[[1,'1.0'],[1.2,'1.2'],[1.4,'1.4'],[1.6,'1.6']],store.settings.jaRate)}
+  ${setRow('英語の後の間','gap',[[0,'なし'],[2,'2秒'],[4,'4秒']])}
+  <p class="label">範囲と出題順</p>${scopeChips('lt',lt.scope)}
+  ${setRow('出題順','order',[['seq','順番どおり'],['shuffle','シャッフル']])}
+  <p class="hint">速さは倍率です（1.0が標準）。設定の変更は次の読み上げから反映されます。間を空けると、その間に声に出してまねる（シャドーイング）練習ができます。再生中は画面をつけたままにしてください。画面をロックすると読み上げが止まります。</p>`;
+  updLtCard();
+}
+
+/* ===================== 会話 ===================== */
+function markLine(i){
+  document.querySelectorAll('.line.now').forEach(el=>el.classList.remove('now'));
+  const el=document.getElementById('ln'+i);
+  if(el){el.classList.add('now');el.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'nearest'});}
+}
+function updTalkBtn(){const b=document.getElementById('tallBtn');if(b)b.textContent=tk.playing?'停止':'通して再生';}
+async function playDialog(){
+  const d=DIALOGS[tk.open];if(!d)return;
+  halt();const my=RUN;tk.playing=true;updTalkBtn();
+  for(let i=0;i<d.lines.length;i++){
+    if(my!==RUN)return;
+    tk.cur=i;markLine(i);
+    await sayEn(d.lines[i].en,{role:d.lines[i].sp});
+    if(my!==RUN)return;
+    await sleep(450);
+  }
+  if(my===RUN){tk.playing=false;tk.cur=-1;markLine(-1);updTalkBtn();}
+}
+function stopDialog(){halt();tk.playing=false;tk.cur=-1;markLine(-1);updTalkBtn();}
+function renderTalk(v){
+  if(tk.open===null){
+    v.innerHTML=`
+    <h2 class="h">会話</h2>
+    <p class="lead">試合中によくあるやりとりを通して聞きます。審判のセリフは「審判役の声」、コーチや選手は「相手役の声」で読み上げます。</p>
+    <ul class="dlist">${DIALOGS.map((d,i)=>`<li><button class="dcard" data-act="topen" data-arg="${i}"><span class="dt">${esc(d.title)}</span><span class="dd">${esc(d.desc)}</span><span class="dn">${d.lines.length}行</span></button></li>`).join('')}</ul>`;
+    return;
+  }
+  const d=DIALOGS[tk.open];
+  v.innerHTML=`
+  <button class="back" data-act="tback">${ICON.back}会話の一覧</button>
+  <h2 class="h">${esc(d.title)}</h2>
+  <p class="lead">${esc(d.desc)}</p>
+  <div class="talkbar">
+    <button class="primary inline" data-act="tall" id="tallBtn">${tk.playing?'停止':'通して再生'}</button>
+    <button class="chip" data-act="thide" aria-pressed="${tk.hideEn}">英文を隠す</button>
+    <button class="chip" data-act="tja" aria-pressed="${tk.showJa}">日本語を表示</button>
+  </div>
+  <ol class="lines ${tk.hideEn?'hide-en':''} ${tk.showJa?'':'no-ja'}">${d.lines.map((l,i)=>
+    `<li><button class="line ${l.sp==='ref'?'me':''} ${tk.cur===i?'now':''}" data-act="tline" data-arg="${i}" id="ln${i}"><span class="who">${l.sp==='ref'?'あなた':ROLE[l.sp]}</span><span><span class="en" lang="en">${esc(l.en)}</span><span class="ja">${esc(l.ja)}</span></span></button></li>`).join('')}</ol>
+  <p class="hint">「英文を隠す」にすると耳だけで聞き取る練習になります。行をタップするとその行だけ再生します。</p>`;
+}
+
+/* ===================== 操作 ===================== */
+const ACT={
+  scope(arg,t){
+    const k=t.dataset.for;
+    if(k==='ph'){ph.scope=arg;}
+    else if(k==='qz'){qz.scope=arg;}
+    else if(k==='dc'){dc.scope=arg;}
+    else if(k==='lt'){ltStop();lt.scope=arg;saveLt();buildLt();}
+    render();
+  },
+  say(arg){playPhrase(arg,false);},
+  slow(arg){playPhrase(arg,true);},
+  reveal(arg,t){const row=t.closest('.row');if(row)row.classList.add('show');playPhrase(arg,false);},
+  star(arg,t){if(store.star[arg])delete store.star[arg];else store.star[arg]=true;save();t.setAttribute('aria-pressed',String(!!store.star[arg]));toast(store.star[arg]?'要復習に入れました':'要復習から外しました');},
+  saytext(arg,t){halt();sayEn(t.dataset.text,{role:t.dataset.role||'ref'});},
+  qmode(arg){qz.mode=arg;render();},
+  qstart(){startQuiz();},
+  qplay(){playQuestion(false);},
+  qslow(){playQuestion(true);},
+  qans(arg){answerQuiz(arg);},
+  qnext(){nextQuiz();},
+  qquit(){halt();qz.run=null;render();},
+  dstart(){startDict();},
+  dplay(){playDict(false);},
+  dslow(){playDict(true);},
+  dhint(){const run=dc.run;const ta=$('#dcin');if(ta&&!run.result)run.draft=ta.value;run.hint=!run.hint;render();},
+  dcheck(){checkDict();},
+  dnext(){nextDict();},
+  dquit(){halt();dc.run=null;render();},
+  lttoggle(){if(lt.playing)ltStop();else ltLoop();},
+  ltprev(){ltJump(-1);},
+  ltnext(){ltJump(1);},
+  ltsay(){if(lt.playing)return;const p=lt.list[lt.i];if(p){halt();sayEn(p.en);}},
+  ltset(arg,t){
+    const key=t.dataset.key;
+    if(key==='rate'||key==='jaRate'){store.settings[key]=Number(arg);save();}
+    else{lt[key]=(key==='rep'||key==='gap')?Number(arg):arg;saveLt();}
+    if(key==='order'){const cur=lt.list[lt.i];const was=lt.playing;if(was)ltStop();buildLt();const k=lt.list.indexOf(cur);if(lt.order==='seq'&&k>=0)lt.i=k;render();if(was)ltLoop();}
+    else if(key==='pattern'){render();}
+    else{t.parentElement.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===t)));}
+  },
+  topen(arg){tk.open=+arg;tk.cur=-1;tk.playing=false;render();window.scrollTo(0,0);},
+  tback(){stopDialog();tk.open=null;render();},
+  tall(){if(tk.playing)stopDialog();else playDialog();},
+  tline(arg){
+    const d=DIALOGS[tk.open];const i=+arg;const l=d&&d.lines[i];if(!l)return;
+    halt();tk.playing=false;updTalkBtn();const my=RUN;tk.cur=i;markLine(i);
+    sayEn(l.en,{role:l.sp}).then(()=>{if(my===RUN){tk.cur=-1;markLine(-1);}});
+  },
+  thide(arg,t){tk.hideEn=!tk.hideEn;t.setAttribute('aria-pressed',String(tk.hideEn));$('.lines').classList.toggle('hide-en',tk.hideEn);},
+  tja(arg,t){tk.showJa=!tk.showJa;t.setAttribute('aria-pressed',String(tk.showJa));$('.lines').classList.toggle('no-ja',!tk.showJa);}
+};
+view.addEventListener('click',e=>{
+  const t=e.target.closest('[data-act]');if(!t||!view.contains(t))return;
+  const fn=ACT[t.dataset.act];if(fn)fn(t.dataset.arg,t,e);
+});
+view.addEventListener('input',e=>{
+  if(e.target.id==='phq'){ph.q=e.target.value;const l=$('#plist');if(l)l.innerHTML=phraseListHTML();}
+  if(e.target.id==='dcin'&&dc.run&&!dc.run.result)dc.run.draft=e.target.value;
+});
+view.addEventListener('change',e=>{
+  if(e.target.id==='hideJa'){store.settings.hideJa=e.target.checked;save();const l=$('#plist');if(l)l.classList.toggle('hide-ja',e.target.checked);}
+});
+view.addEventListener('keydown',e=>{
+  if(e.target.id==='dcin'&&e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();checkDict();}
+});
+$('#nav').addEventListener('click',e=>{const b=e.target.closest('button[data-tab]');if(b)go(b.dataset.tab);});
+
+/* ===================== 設定 ===================== */
+const dlg=$('#settings');
+function fillVoiceSelects(){
+  const sv=$('#selVoice'),sa=$('#selAlt');if(!sv||!sa)return;
+  const opt=v=>`<option value="${esc(v.voiceURI)}">${esc(v.name)}（${esc(v.lang)}）</option>`;
+  sv.innerHTML='<option value="">自動で選ぶ</option>'+V.list.map(opt).join('');
+  sa.innerHTML='<option value="">自動で選ぶ（審判役と別の声）</option>'+V.list.map(opt).join('');
+  sv.value=V.list.some(v=>v.voiceURI===store.settings.voice)?store.settings.voice:'';
+  sa.value=V.list.some(v=>v.voiceURI===store.settings.alt)?store.settings.alt:'';
+  $('#voiceWarn').hidden=!!V.list.length||!HAS_TTS;
+}
+function showRate(){$('#rateVal').textContent=Number(store.settings.rate).toFixed(2)+'倍';$('#jaRateVal').textContent=Number(store.settings.jaRate).toFixed(1)+'倍';}
+$('#openSettings').addEventListener('click',()=>{loadVoices();fillVoiceSelects();$('#rate').value=store.settings.rate;$('#jaRate').value=store.settings.jaRate;showRate();
+  if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','');});
+$('#selVoice').addEventListener('change',e=>{store.settings.voice=e.target.value;save();});
+$('#selAlt').addEventListener('change',e=>{store.settings.alt=e.target.value;save();});
+$('#rate').addEventListener('input',e=>{store.settings.rate=Number(e.target.value);showRate();save();});
+$('#jaRate').addEventListener('input',e=>{store.settings.jaRate=Number(e.target.value);showRate();save();});
+dlg.addEventListener('close',()=>{if(tab==='listen')render();});
+$('#testMain').addEventListener('click',()=>{halt();sayEn("Coach, I’ll explain at the next dead ball.");});
+$('#testAlt').addEventListener('click',()=>{halt();sayEn("Ref, he was set! That’s a charge!",{role:'coach'});});
+$('#testJa').addEventListener('click',()=>{halt();sayJa('コーチ、次のデッドボールで説明します。');});
+$('#resetAll').addEventListener('click',()=>{
+  if(!confirm('正解数・要復習・☆をすべて消去します。よろしいですか？'))return;
+  store.stats={};store.weak={};store.star={};save();toast('学習記録を消去しました');render();
+});
+dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close();});
+
+/* ===================== アイコン・マニフェスト ===================== */
+(function makeIcon(){
+  try{
+    const c=document.createElement('canvas');c.width=c.height=512;const g=c.getContext('2d');
+    g.fillStyle='#000';g.fillRect(0,0,512,512);
+    g.fillStyle='#B9BEC5';for(let x=22;x<512;x+=58)g.fillRect(x,0,30,512);
+    g.fillStyle='#FFB000';g.beginPath();g.arc(256,256,158,0,Math.PI*2);g.fill();
+    g.fillStyle='#000';g.font='700 168px "Barlow Condensed","Arial Narrow",sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('EN',256,268);
+    const url=c.toDataURL('image/png');
+    [['apple-touch-icon',url],['icon',url]].forEach(([rel,href])=>{const l=document.createElement('link');l.rel=rel;l.href=href;document.head.appendChild(l);});
+    const man={name:'審判英語リスニング',short_name:'審判英語',start_url:location.href.split('#')[0],display:'standalone',background_color:'#000000',theme_color:'#000000',icons:[{src:url,sizes:'512x512',type:'image/png'}]};
+    const ml=document.createElement('link');ml.rel='manifest';ml.href=URL.createObjectURL(new Blob([JSON.stringify(man)],{type:'application/manifest+json'}));document.head.appendChild(ml);
+  }catch(e){}
+})();
+
+/* ===================== 起動 ===================== */
+if(HAS_TTS){
+  loadVoices();
+  speechSynthesis.addEventListener?speechSynthesis.addEventListener('voiceschanged',loadVoices):(speechSynthesis.onvoiceschanged=loadVoices);
+  let tries=0;const poll=setInterval(()=>{if(V.list.length||++tries>20){clearInterval(poll);return;}loadVoices();},250);
+}
+render();
+</script>
+</body>
+</html>
