@@ -204,8 +204,7 @@ details.dlg[open] summary{border-bottom:1px solid var(--line)}
 <dialog id="settings" aria-labelledby="setTitle">
   <form method="dialog" class="sheet">
     <div class="sheet-head"><h2 id="setTitle">設定</h2><button class="link" value="close">閉じる</button></div>
-    <label class="field"><span>英語の速さ <b id="rateVal"></b></span><input type="range" id="rate" min="0.5" max="1.2" step="0.05"></label>
-    <label class="field"><span>日本語の速さ <b id="jaRateVal"></b></span><input type="range" id="jaRate" min="0.8" max="1.8" step="0.1"></label>
+    <label class="field"><span>再生の速さ <b id="rateVal"></b></span><input type="range" id="rate" min="0.7" max="1.3" step="0.05"></label>
     <div class="fine">
       <p><b>ロック中・ヘッドホンでの使い方</b><br>再生を始めてから画面をロックしても、音声は流れ続けます。ロック画面とヘッドホンのボタンで、再生・一時停止・次へ・前へを操作できます。1フレーズ、1場面ごとに音声をまとめて再生しているので、一時停止してからイヤホンのボタンで再開できます。ワイヤレスイヤホンを外したり接続が切れたりすると一時停止します。</p>
     </div>
@@ -214,7 +213,7 @@ details.dlg[open] summary{border-bottom:1px solid var(--line)}
     <div class="fine">
       <p><b>補足の根拠について</b><br>「基本」の教材の補足欄にある（18-2-5）などは、JBA 2026バスケットボール競技規則（FIBA Official Basketball Rules 2024にもとづく）の条項番号です。「新」と付いたものは2027競技規則（国内は2027年4月1日から）の条項です。「JBA資料」の補足欄の「マニュアル9-6-2」はJBA 2025オフィシャルズ・マニュアルの項目番号、「ガイドライン1-7」はJBAプレーコーリング・ガイドライン（20260401）の章と項目です。会話や英語の言い回しはこれらの資料の内容にもとづいて作った例で、公式の定型文ではありません。</p>
       <p><b>出典</b><br>JBA 2025オフィシャルズ・マニュアル（日本バスケットボール協会）<br>JBAプレーコーリング・ガイドライン（20260401、JBA審判グループ）<br>FIBA Official Basketball Rules 2024 v1.0<br>https://assets.fiba.basketball/image/upload/documents-corporate-fiba-official-rules-2024-v10.pdf<br>The FIBA Official Basketball Rules Changes 2024 v2.0<br>https://assets.fiba.basketball/image/upload/documents-corporate-fiba-official-rules-2024-changes---v20a-eng.pdf<br>2027バスケットボール競技規則 主な変更点要約サマリー（JBA審判グループ、2026年8月23日）<br>https://www.japanbasketball.jp/files/referee/rule/2027rule_changepoint_20260823.pdf</p>
-      <p><b>音声</b><br>英語：Piper TTSで合成。審判役 Ryan（RyanSpeech、CC BY-NC-SA 4.0）、ほかの役 LibriTTS（CC BY 4.0）。<br>日本語：Open JTalkで合成。HTSボイス tohoku-f01（東北大学 伊藤・能勢研究室、CC BY 4.0）。<br>非営利の学習目的で使用しています。</p>
+      <p><b>音声</b><br>英語：Piper TTSで合成。審判役 Ryan（RyanSpeech、CC BY-NC-SA 4.0）、ほかの役 LibriTTS（CC BY 4.0）。<br>日本語：VOICEVOX:冥鳴ひまり<br>非営利の学習目的で使用しています。</p>
       <p>© 2026 大國将</p>
     </div>
   </form>
@@ -238,8 +237,8 @@ const ROLE={ref:'審判',coach:'コーチ',coachB:'コーチ',player:'選手',pl
 /* ===================== 保存 ===================== */
 const KEY='refEnglish.v1';
 const store=(()=>{let s={};try{s=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){s={};}
-  s.settings=Object.assign({rate:0.9,jaRate:1.1,hideJa:false},s.settings||{});
-  s.lt=Object.assign({scope:'all',order:'seq',rep:2,gap:2,pattern:'jeje',slowFirst:'off',pos:0},s.lt||{});
+  s.settings=Object.assign({speed:1,hideJa:false},s.settings||{});delete s.settings.rate;delete s.settings.jaRate;
+  s.lt=Object.assign({scope:'all',order:'seq',rep:2,gap:2,pattern:'jeje',pos:0},s.lt||{});delete s.lt.slowFirst;
   s.lt2=Object.assign({scope:'all',order:'seq',pos:0},s.lt2||{});
   s.tk=Object.assign({mode:'flow',order:'seq',pos:0,hideEn:false,showJa:true},s.tk||{});
   s.tk2=Object.assign({order:'seq',pos:0},s.tk2||{});
@@ -287,7 +286,7 @@ const TABS=[
    音声ファイルを2MBずつに分けて取得し（Rangeリクエスト）、
    取得できた分から端末に保存する。途中で失敗しても、
    再読み込みすると続きから取得する。 */
-const A={blobs:[],ready:false,progress:0,error:null,loading:false};
+const A={blobs:[],bufs:[],ready:false,progress:0,error:null,loading:false};
 const CHUNK=2*1024*1024;
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function fetchPart(url,start,end){
@@ -351,6 +350,9 @@ async function loadAudio(fresh){
       else A.blobs[i]=new Blob(parts);
       A.progress=got/total;updLoad();
     }
+    // 再生中に途切れないよう、音声データをメモリに展開しておく
+    for(let i=0;i<A.blobs.length;i++){A.bufs[i]=await A.blobs[i].arrayBuffer();}
+    A.blobs=[];
     A.ready=true;
   }catch(e){A.error=e;}
   A.loading=false;updLoad();
@@ -373,34 +375,27 @@ function updLoad(){
 const el=new Audio();el.preload='auto';el.setAttribute('playsinline','');el.style.display='none';document.body.appendChild(el);
 try{el.preservesPitch=true;el.webkitPreservesPitch=true;}catch(e){}
 const PL={prog:null,playing:false,switching:false,url:null,segs:[],segIdx:-1,dur:0,meta:null};
-let ICON_URL='';
-function rateOf(st){
-  if(st.lang==='ja')return Number(store.settings.jaRate)||1;
-  const r=Number(store.settings.rate)||1;
-  return st.slow?Math.max(0.5,r*0.75):r;
-}
+let ICON_URL='',MS_ART='';
+const speed=()=>Number(store.settings.speed)||1;
 function buildMedia(steps){
-  const parts=[],segs=[];let t=0;
+  const list=[],segs=[];let t=0,total=0;
   for(const st of steps){
-    const info=AUDIO.index[st.key];if(!info||!A.blobs[info[0]])continue;
-    parts.push(A.blobs[info[0]].slice(info[1],info[1]+info[2]));
+    const info=AUDIO.index[st.key];if(!info||!A.bufs[info[0]])continue;
+    list.push(info);total+=info[2];
     const d=info[3]/1000;segs.push({st,start:t,end:t+d});t+=d;
   }
   if(!segs.length)return null;
-  return {url:URL.createObjectURL(new Blob(parts,{type:'audio/mpeg'})),segs,dur:t};
+  // 1本の連続したデータにまとめる（細切れのデータを読ませない）
+  const u=new Uint8Array(total);let o=0;
+  for(const info of list){u.set(new Uint8Array(A.bufs[info[0]],info[1],info[2]),o);o+=info[2];}
+  return {url:URL.createObjectURL(new Blob([u],{type:'audio/mpeg'})),segs,dur:t};
 }
-function segRate(i){
-  const s=PL.segs;
-  for(let j=Math.max(0,i);j<s.length;j++)if(!s[j].st.key.startsWith('s:'))return rateOf(s[j].st);
-  return el.playbackRate||1;
-}
-function applyRate(){
-  if(!PL.segs.length)return;
-  const r=segRate(PL.segIdx<0?0:PL.segIdx);
-  if(Math.abs(el.playbackRate-r)>0.001||Math.abs(el.defaultPlaybackRate-r)>0.001){
-    try{el.defaultPlaybackRate=r;el.playbackRate=r;}catch(e){}
-    posState();
-  }
+// 単発の「ゆっくり」再生だけは、その音声全体を同じ速さ（0.75倍）で流す
+const targetRate=()=>(PL.prog&&PL.prog.rate)||speed();
+function setSpeed(){
+  const r=targetRate();
+  try{if(el.defaultPlaybackRate!==r)el.defaultPlaybackRate=r;if(el.playbackRate!==r)el.playbackRate=r;}catch(e){}
+  posState();
 }
 function onTime(){
   const pr=PL.prog;if(!pr||!PL.segs.length)return;
@@ -410,7 +405,7 @@ function onTime(){
   while(i>0&&t<s[i].start-0.03)i--;
   if(i!==PL.segIdx){
     const jumped=Math.abs(i-PL.segIdx)>1;
-    PL.segIdx=i;applyRate();
+    PL.segIdx=i;
     let j=i;while(j>0&&s[j].st.key.startsWith('s:'))j--;
     if(jumped&&j!==i&&pr.onStep)pr.onStep(s[j].st,pr);
     const st=s[i].st;
@@ -428,6 +423,7 @@ function loadUnit(){
   PL.url=m.url;PL.segs=m.segs;PL.dur=m.dur;PL.segIdx=-1;
   PL.switching=true;
   el.src=m.url;
+  setSpeed();
   PL.switching=false;
   if(old)setTimeout(()=>URL.revokeObjectURL(old),3000);
   onTime();
@@ -472,7 +468,7 @@ function jumpPL(dir){
   syncUI();
 }
 el.addEventListener('timeupdate',onTime);
-el.addEventListener('loadedmetadata',()=>{applyRate();posState();});
+el.addEventListener('loadedmetadata',()=>{setSpeed();});
 el.addEventListener('ended',()=>{
   const pr=PL.prog;if(!pr||!PL.playing)return;
   if(!advanceUnit(pr,1)){endProg();return;}
@@ -480,7 +476,7 @@ el.addEventListener('ended',()=>{
   playEl();
 });
 el.addEventListener('pause',()=>{if(el.ended||PL.switching)return;if(PL.playing){PL.playing=false;syncUI();msState('paused');}});
-el.addEventListener('play',()=>{applyRate();if(PL.prog&&!PL.playing){PL.playing=true;syncUI();msState('playing');}});
+el.addEventListener('play',()=>{if(el.playbackRate!==targetRate())setSpeed();if(PL.prog&&!PL.playing){PL.playing=true;syncUI();msState('playing');}});
 setInterval(()=>{if(PL.playing&&!el.paused)onTime();},120);
 
 function msState(s){if('mediaSession' in navigator){try{navigator.mediaSession.playbackState=s;}catch(e){}}}
@@ -490,9 +486,11 @@ function posState(){
   if(!(d>0))return;
   try{navigator.mediaSession.setPositionState({duration:d,playbackRate:el.playbackRate||1,position:Math.min(Math.max(0,el.currentTime||0),d)});}catch(e){}
 }
+let lastMeta='';
 function setMeta(m){
   if(!('mediaSession' in navigator)||typeof MediaMetadata==='undefined')return;
-  try{navigator.mediaSession.metadata=new MediaMetadata({title:m.title,artist:m.artist||'審判英語リスニング',album:m.album||'Referee English',artwork:ICON_URL?[{src:ICON_URL,sizes:'512x512',type:'image/png'}]:[]});}catch(e){}
+  const sig=m.title+'|'+(m.artist||'');if(sig===lastMeta)return;lastMeta=sig;
+  try{navigator.mediaSession.metadata=new MediaMetadata({title:m.title,artist:m.artist||'審判英語リスニング',album:m.album||'Referee English',artwork:MS_ART?[{src:MS_ART,sizes:'192x192',type:'image/png'}]:[]});}catch(e){}
 }
 if('mediaSession' in navigator){
   const h=(a,f)=>{try{navigator.mediaSession.setActionHandler(a,f);}catch(e){}};
@@ -507,7 +505,7 @@ if('mediaSession' in navigator){
 /* 単発再生（一覧・クイズ） */
 function playOne(steps,{btn=null,meta=null}={}){
   const list=Array.isArray(steps)?steps:[steps];
-  const prog={name:'one',units:[0],unitIdx:0,loop:false,
+  const prog={name:'one',units:[0],unitIdx:0,loop:false,rate:list.some(x=>x.slow)?Math.max(0.5,speed()*0.75):null,
     build:()=>list.reduce((a,k,i)=>{if(i)a.push({key:'s:500'});a.push(k);return a;},[]),
     onStep:st=>{if(st.line!==undefined)markLine(st.lineId,st.line);},
     onEnd:()=>{btn&&btn.classList.remove('speaking');markLine(null,-1);}};
@@ -531,7 +529,7 @@ const S=ms=>({key:'s:'+ms});
 function phraseSteps(p,album){
   const o=store.lt;
   const gap=o.gap?{key:'s:'+o.gap*1000,phase:'まねして言ってみよう'}:S(500);
-  const en=r=>({key:'e:'+p.id,lang:'en',slow:o.slowFirst==='on'&&r===0,phase:o.rep>1?`英語 ${r+1}/${o.rep}`:'英語'});
+  const en=r=>({key:'e:'+p.id,lang:'en',phase:o.rep>1?`英語 ${r+1}/${o.rep}`:'英語'});
   const enBlock=()=>{const a=[];for(let r=0;r<o.rep;r++)a.push(en(r),gap);return a;};
   const ja=()=>({key:'j:'+p.id,lang:'ja',phase:'日本語'});
   let s;
@@ -544,8 +542,7 @@ function phraseSteps(p,album){
 }
 function talkSteps(d,P){
   const id=d.id,L=d.lines,m=store.tk.mode;
-  const meta=(k,ph)=>({title:L[k].en,artist:d.title+'｜'+ph,album:P.label});
-  const en=(k,ph)=>({key:`e:${id}-${k}`,lang:'en',line:k,lineId:P.pfx,show:'en',phase:ph,meta:meta(k,ph)});
+  const en=(k,ph)=>({key:`e:${id}-${k}`,lang:'en',line:k,lineId:P.pfx,show:'en',phase:ph});
   const ja=(k,ph)=>({key:`j:${id}-${k}`,lang:'ja',line:k,lineId:P.pfx,show:'ja',phase:ph});
   const s=[{key:'t:'+id,lang:'ja',line:-1,lineId:P.pfx,phase:'場面',meta:{title:d.title,artist:d.desc,album:P.label}},S(700)];
   if(m==='flow'){
@@ -650,14 +647,13 @@ function segHTML(label,act,key,opts,cur,extra=''){
     `<button data-act="${act}" data-key="${key}" data-arg="${val}" ${extra} aria-pressed="${String(cur)===String(val)}">${l}</button>`).join('')}</div>`;
 }
 function setRow(label,act,key,opts,cur,extra=''){return `<div class="setrow"><span>${label}</span>${segHTML(label,act,key,opts,cur,extra)}</div>`;}
-const RATE_EN=[[0.7,'0.7'],[0.8,'0.8'],[0.9,'0.9'],[1,'1.0'],[1.1,'1.1']];
-const RATE_JA=[[1,'1.0'],[1.2,'1.2'],[1.4,'1.4'],[1.6,'1.6']];
+const SPEEDS=[[0.8,'0.8'],[0.9,'0.9'],[1,'1.0'],[1.1,'1.1'],[1.2,'1.2']];
 const boardCtrl=P=>`<div class="ctrl">
   <button class="side" data-act="pprev" data-prog="${P.name}" aria-label="前へ" data-need-audio>${ICON.prev}</button>
   <button class="mid" id="${P.pfx}Btn" data-act="pbtn" data-prog="${P.name}" data-need-audio></button>
   <button class="side" data-act="pnext" data-prog="${P.name}" aria-label="次へ" data-need-audio>${ICON.next}</button></div>
   <div class="loadbox" hidden></div>`;
-const speedRows=()=>setRow('英語の速さ','rate','rate',RATE_EN,store.settings.rate)+setRow('日本語の速さ','rate','jaRate',RATE_JA,store.settings.jaRate);
+const speedRows=()=>setRow('再生の速さ','rate','speed',SPEEDS,store.settings.speed);
 
 /* フレーズの聞き流し（共通） */
 function phraseBoardHTML(P){
@@ -677,12 +673,12 @@ function phraseSettingsHTML(P){
   ${segHTML('読み上げの順番','ltset','pattern',[['jeje','日→英→日→英'],['ej','英→日'],['e','英語だけ']],o.pattern)}
   <p class="label">読み上げ</p>
   ${setRow('英語の回数','ltset','rep',[[1,'1回'],[2,'2回'],[3,'3回']],o.rep)}
-  ${setRow('1回目をゆっくり','ltset','slowFirst',[['on','する'],['off','しない']],o.slowFirst)}
   ${speedRows()}
   ${setRow('英語の後の間','ltset','gap',[[0,'なし'],[2,'2秒'],[4,'4秒']],o.gap)}
   <p class="label">範囲と順番</p>${scopeChips(P.ds,P.name,P.st().scope)}
   ${setRow('順番','order','order',[['seq','順番どおり'],['shuffle','シャッフル']],P.st().order,`data-prog="${P.name}"`)}
-  <p class="hint">「日→英→日→英」では、日本語で意味を聞いてから英語を聞き、もう一度くり返します。英語は「英語の回数」だけ続けて流れます。読み上げの順番・回数・間は次のフレーズから、速さはすぐに反映されます。</p>
+  <p class="hint">「日→英→日→英」では、日本語で意味を聞いてから英語を聞き、もう一度くり返します。英語は「英語の回数」だけ続けて流れます。読み上げの順番・回数・間は次のフレーズから反映されます。</p>
+  <p class="hint">再生の速さは英語と日本語に同じようにかかります。1.0が録音そのままの速さで、いちばん音がきれいです。英語が速いと感じたら0.9にしてください。</p>
   <p class="hint">再生を始めたら画面をロックしても流れ続けます。ロック画面やイヤホンのボタンで、一時停止・再開・次へ・前へを操作できます。</p>`;
 }
 function renderPhraseListen(v,P){
@@ -921,7 +917,7 @@ const ACT={
     if(key==='pattern')render();else markSeg(t);
   },
   order(arg,t){const P=progOf(t);P.st().order=arg;save();P.rebuild(true);render();},
-  rate(arg,t){store.settings[t.dataset.key]=Number(arg);save();markSeg(t);applyRate();},
+  rate(arg,t){store.settings.speed=Number(arg);save();document.querySelectorAll('[data-act="rate"]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.arg)===store.settings.speed)));setSpeed();},
   tkset(arg,t){store.tk[t.dataset.key]=arg;save();render();},
   topen(arg,t){const P=progOf(t);P.unitIdx=Number(arg);startProg(P);render();},
   tline(arg,t){
@@ -965,11 +961,10 @@ $('#nav').addEventListener('click',e=>{const b=e.target.closest('button[data-tab
 
 /* ===================== 設定 ===================== */
 const dlg=$('#settings');
-function showRate(){$('#rateVal').textContent=Number(store.settings.rate).toFixed(2)+'倍';$('#jaRateVal').textContent=Number(store.settings.jaRate).toFixed(1)+'倍';}
-$('#openSettings').addEventListener('click',()=>{$('#rate').value=store.settings.rate;$('#jaRate').value=store.settings.jaRate;showRate();
+function showRate(){$('#rateVal').textContent=Number(store.settings.speed).toFixed(2)+'倍';}
+$('#openSettings').addEventListener('click',()=>{$('#rate').value=store.settings.speed;showRate();
   if(typeof dlg.showModal==='function')dlg.showModal();else dlg.setAttribute('open','');});
-$('#rate').addEventListener('input',e=>{store.settings.rate=Number(e.target.value);showRate();save();applyRate();});
-$('#jaRate').addEventListener('input',e=>{store.settings.jaRate=Number(e.target.value);showRate();save();applyRate();});
+$('#rate').addEventListener('input',e=>{store.settings.speed=Number(e.target.value);showRate();save();setSpeed();});
 $('#reloadAudio').addEventListener('click',()=>{dlg.close();loadAudio(true);render();});
 $('#resetAll').addEventListener('click',()=>{if(!confirm('正解数・要復習・☆をすべて消去します。よろしいですか？'))return;store.stats={};store.weak={};store.star={};save();toast('学習記録を消去しました');render();});
 dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close();});
@@ -984,6 +979,8 @@ dlg.addEventListener('close',()=>render());
     g.fillStyle='#FFB000';g.beginPath();g.arc(256,256,158,0,Math.PI*2);g.fill();
     g.fillStyle='#000';g.font='700 168px "Barlow Condensed","Arial Narrow",sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('EN',256,268);
     ICON_URL=c.toDataURL('image/png');
+    const c2=document.createElement('canvas');c2.width=c2.height=192;c2.getContext('2d').drawImage(c,0,0,192,192);
+    MS_ART=c2.toDataURL('image/png');
     [['apple-touch-icon',ICON_URL],['icon',ICON_URL]].forEach(([rel,href])=>{const l=document.createElement('link');l.rel=rel;l.href=href;document.head.appendChild(l);});
     const man={name:'審判英語リスニング',short_name:'審判英語',start_url:location.href.split('#')[0],display:'standalone',background_color:'#000000',theme_color:'#000000',icons:[{src:ICON_URL,sizes:'512x512',type:'image/png'}]};
     const ml=document.createElement('link');ml.rel='manifest';ml.href=URL.createObjectURL(new Blob([JSON.stringify(man)],{type:'application/manifest+json'}));document.head.appendChild(ml);
