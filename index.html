@@ -286,10 +286,39 @@ const TABS=[
    音声ファイルを2MBずつに分けて取得し（Rangeリクエスト）、
    取得できた分から端末に保存する。途中で失敗しても、
    再読み込みすると続きから取得する。 */
-const A={blobs:[],bufs:[],ready:false,progress:0,error:null,loading:false};
+const A={bufs:[],ready:false,progress:0,error:null,loading:false};
 const CHUNK=2*1024*1024;
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-async function fetchPart(url,start,end){
+/* ダウンロードしたファイルの先頭に、別の情報（ID3タグなど）が付け足されていることがある。
+   その場合でも、本来のデータの部分だけを取り出して検証する。 */
+function blobToBuf(b){
+  if(b.arrayBuffer)return b.arrayBuffer();
+  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(r.error);r.readAsArrayBuffer(b);});
+}
+async function shaHex(buf){
+  const d=await crypto.subtle.digest('SHA-256',buf);
+  return Array.from(new Uint8Array(d)).map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+async function extractPayload(buf,pk){
+  const u8=new Uint8Array(buf),offs=[];
+  let o=0;
+  while(o+10<=u8.length&&u8[o]===0x49&&u8[o+1]===0x44&&u8[o+2]===0x33){
+    const size=((u8[o+6]&0x7f)<<21)|((u8[o+7]&0x7f)<<14)|((u8[o+8]&0x7f)<<7)|(u8[o+9]&0x7f);
+    o+=10+size+((u8[o+5]&0x10)?10:0);
+  }
+  if(o>0)offs.push(o);
+  offs.push(0);
+  if(buf.byteLength>pk.size)offs.push(buf.byteLength-pk.size);
+  const canSha=!!(pk.sha&&window.crypto&&crypto.subtle);
+  for(const off of [...new Set(offs)]){
+    if(off<0||off+pk.size>buf.byteLength)continue;
+    const pay=(off===0&&buf.byteLength===pk.size)?buf:buf.slice(off,off+pk.size);
+    if(!canSha){if(buf.byteLength-off===pk.size)return pay;continue;}
+    try{if(await shaHex(pay)===pk.sha)return pay;}catch(e){if(buf.byteLength-off===pk.size)return pay;}
+  }
+  return null;
+}
+async function fetchRange(url,start,end){
   let last=null;
   for(let attempt=0;attempt<4;attempt++){
     const ctrl=('AbortController' in window)?new AbortController():null;
@@ -297,87 +326,79 @@ async function fetchPart(url,start,end){
     try{
       const r=await fetch(url,{headers:{Range:`bytes=${start}-${end}`},cache:'no-store',signal:ctrl?ctrl.signal:undefined});
       if(r.status===206){
+        const cr=r.headers.get('Content-Range')||'';const m=cr.match(/\/(\d+)\s*$/);
         const b=await r.blob();clearTimeout(tm);
-        if(b.size===end-start+1)return {part:b};
-        throw new Error('データの長さが合いません');
+        return {part:b,total:m?Number(m[1]):null};
       }
       if(r.status===200){const b=await r.blob();clearTimeout(tm);return {full:b};}
       clearTimeout(tm);
       if(r.status===404)throw Object.assign(new Error('ファイルが見つかりません（404）'),{fatal:true});
       throw new Error('HTTP '+r.status);
-    }catch(e){
-      clearTimeout(tm);last=e;
-      if(e.fatal)break;
-      await sleep(1500*(attempt+1));
-    }
+    }catch(e){clearTimeout(tm);last=e;if(e.fatal)break;await sleep(1500*(attempt+1));}
   }
   throw last||new Error('通信エラー');
 }
-function blobToBuf(b){
-  if(b.arrayBuffer)return b.arrayBuffer();
-  return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(r.error);r.readAsArrayBuffer(b);});
-}
-async function packOK(buf,pk){
-  if(!buf||buf.byteLength!==pk.size)return false;
-  if(!pk.sha||!(window.crypto&&crypto.subtle))return true;
-  try{
-    const d=await crypto.subtle.digest('SHA-256',buf);
-    const hex=Array.from(new Uint8Array(d)).map(x=>x.toString(16).padStart(2,'0')).join('');
-    return hex===pk.sha;
-  }catch(e){return true;}
-}
-async function fetchWhole(pk){
+async function fetchWhole(file){
+  let last=null;
   for(let attempt=0;attempt<3;attempt++){
-    try{const r=await fetch(pk.file+'?v='+Date.now(),{cache:'no-store'});if(r.ok){const b=await r.arrayBuffer();if(b.byteLength===pk.size)return b;}}catch(e){}
+    try{const r=await fetch(file+'?nocache='+Date.now(),{cache:'no-store'});if(r.ok)return await r.arrayBuffer();last=new Error('HTTP '+r.status);}catch(e){last=e;}
     await sleep(2000*(attempt+1));
   }
-  throw new Error(`${pk.file}: 取得できませんでした`);
+  throw last||new Error('通信エラー');
+}
+const keyOf=(file,tag)=>new URL(file+'?'+tag,location.href).href;
+async function loadPack(pk,cache,onBytes){
+  // 1) 検証済みのデータが保存されていれば、それを使う
+  if(cache){
+    try{const r=await cache.match(keyOf(pk.file,'payload'));if(r){const b=await r.arrayBuffer();if(b.byteLength===pk.size){onBytes(pk.size);return b;}}}catch(e){}
+  }
+  // 2) 2MBずつ取得（途中まで取れた分は保存しておき、次回は続きから）
+  let total=null,parts=[],got=0,full=null;
+  for(let start=0;total===null||start<total;start+=CHUNK){
+    const end=start+CHUNK-1;
+    let b=null;
+    if(cache&&total!==null){try{const r=await cache.match(keyOf(pk.file,`part=${start}&t=${total}`));if(r)b=await r.blob();}catch(e){b=null;}}
+    if(!b){
+      let res;
+      try{res=await fetchRange(pk.file,start,end);}
+      catch(e){throw new Error(`${pk.file}（${Math.round(start/1048576)}MB付近）: ${e.message||e}`);}
+      if(res.full){full=res.full;break;}
+      if(total===null)total=res.total||0;
+      b=res.part;
+      if(cache&&total){try{await cache.put(keyOf(pk.file,`part=${start}&t=${total}`),new Response(b));}catch(e){}}
+    }
+    parts.push(b);got+=b.size;onBytes(Math.min(got,pk.size));
+    if(!total)break;
+  }
+  let buf=await blobToBuf(full||new Blob(parts));
+  let pay=await extractPayload(buf,pk);
+  if(!pay){
+    // 3) 合わなければ、まとめて取り直して確かめる
+    pay=await extractPayload(await fetchWhole(pk.file),pk);
+    if(!pay)throw new Error(`${pk.file}: データが本来の内容と一致しません。お渡ししたファイルをそのままアップロードしてください。`);
+  }
+  if(cache){
+    try{await cache.put(keyOf(pk.file,'payload'),new Response(pay));}catch(e){}
+    if(total){for(let s2=0;s2<total;s2+=CHUNK){try{await cache.delete(keyOf(pk.file,`part=${s2}&t=${total}`));}catch(e){}}}
+  }
+  onBytes(pk.size);
+  return pay;
 }
 async function loadAudio(fresh){
   if(A.loading)return;A.loading=true;A.error=null;A.ready=false;updLoad();
-  const cname='refeng-v5-'+AUDIO.build;let cache=null;
+  const cname='refeng-v6-'+AUDIO.build;let cache=null;
   if('caches' in window){
     try{
       for(const k of await caches.keys())if(k.startsWith('refeng-')&&(k!==cname||fresh))await caches.delete(k);
       cache=await caches.open(cname);
     }catch(e){cache=null;}
   }
-  const total=AUDIO.packs.reduce((s,p)=>s+p.size,0);let got=0;
+  const total=AUDIO.packs.reduce((s,p)=>s+p.size,0);let done=0;
   try{
     for(let i=0;i<AUDIO.packs.length;i++){
-      const pk=AUDIO.packs[i];const parts=[];let full=null;
-      for(let start=0;start<pk.size;start+=CHUNK){
-        const end=Math.min(pk.size,start+CHUNK)-1;
-        const key=new URL(pk.file+'?part='+start,location.href).href;
-        let b=null;
-        if(cache){try{const r=await cache.match(key);if(r){b=await r.blob();if(b.size!==end-start+1)b=null;}}catch(e){b=null;}}
-        if(!b){
-          let res;
-          try{res=await fetchPart(pk.file,start,end);}
-          catch(e){throw Object.assign(new Error(`${pk.file}（${Math.round(start/1048576)}MB付近）: ${e.message||e}`),{file:pk.file});}
-          if(res.full){
-            if(res.full.size!==pk.size)throw new Error(`${pk.file}: ファイルの大きさが違います（${res.full.size}バイト）。最新のファイルをアップロードし直してください。`);
-            full=res.full;
-            if(cache){for(let s2=0;s2<pk.size;s2+=CHUNK){const e2=Math.min(pk.size,s2+CHUNK);try{await cache.put(new URL(pk.file+'?part='+s2,location.href).href,new Response(full.slice(s2,e2)));}catch(e){}}}
-            break;
-          }
-          b=res.part;
-          if(cache){try{await cache.put(key,new Response(b));}catch(e){}}
-        }
-        parts.push(b);got+=b.size;A.progress=got/total;updLoad();
-      }
-      if(full){got+=pk.size-parts.reduce((s,b)=>s+b.size,0);}
-      const blob=full||new Blob(parts);
-      const buf=await blobToBuf(blob);
-      if(!(await packOK(buf,pk))){
-        // 壊れていたら、保存した分を消して1回だけ取り直す
-        if(cache){for(let s2=0;s2<pk.size;s2+=CHUNK){try{await cache.delete(new URL(pk.file+'?part='+s2,location.href).href);}catch(e){}}}
-        const again=await fetchWhole(pk);
-        if(!(await packOK(again,pk)))throw new Error(`${pk.file}: データが壊れています。このファイルをアップロードし直してください。`);
-        A.bufs[i]=again;
-        if(cache){for(let s2=0;s2<pk.size;s2+=CHUNK){const e2=Math.min(pk.size,s2+CHUNK);try{await cache.put(new URL(pk.file+'?part='+s2,location.href).href,new Response(again.slice(s2,e2)));}catch(e){}}}
-      }else A.bufs[i]=buf;
-      A.progress=got/total;updLoad();
+      const pk=AUDIO.packs[i];
+      A.bufs[i]=await loadPack(pk,cache,n=>{A.progress=Math.min(0.999,(done+n)/total);updLoad();});
+      done+=pk.size;A.progress=done/total;updLoad();
     }
     A.ready=true;
   }catch(e){A.error=e;}
